@@ -7,6 +7,7 @@ import History from './pages/History';
 import Progress from './pages/Progress';
 import Auth from './pages/Auth';
 import { storageService } from './services/storage';
+import { InteractiveBackground } from './components/InteractiveBackground';
 
 function Navbar({ onLogout }: { onLogout: () => void }) {
   const location = useLocation();
@@ -80,8 +81,9 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#F5F5F5]">
-        <div className="animate-pulse flex flex-col items-center gap-4">
+      <div className="h-screen w-screen flex items-center justify-center relative">
+        <InteractiveBackground />
+        <div className="animate-pulse flex flex-col items-center gap-4 relative z-10">
           <div className="w-12 h-12 bg-black rounded-xl"></div>
           <p className="font-bold tracking-widest text-sm">MOMENTUM</p>
         </div>
@@ -91,11 +93,12 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col relative">
+        <InteractiveBackground />
         {user ? (
           <>
             <Navbar onLogout={handleLogout} />
-            <main className="flex-1">
+            <main className="flex-1 relative z-10">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/workout" element={<Workout />} />
@@ -107,10 +110,12 @@ export default function App() {
             </main>
           </>
         ) : (
-          <Routes>
-            <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
-            <Route path="*" element={<Navigate to="/auth" />} />
-          </Routes>
+          <main className="flex-1 relative z-10">
+            <Routes>
+              <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
+              <Route path="*" element={<Navigate to="/auth" />} />
+            </Routes>
+          </main>
         )}
       </div>
     </Router>

@@ -1,55 +1,37 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { TrendingUp } from 'lucide-react';
 import { storageService } from '../services/storage';
-import { UserProfile } from '../types';
-
-// Let's import them directly from the same folder (src/pages)
-import frontAnatomyImg from './vfwsecwe.png';
-import rearAnatomyImg from './evcawerva.png';
+import { UserProfile, WorkoutSession } from '../types';
+import StatsBar from '../components/StatsBar';
 
 const MuscleOverlay = ({ side, onMuscleClick }: { side: 'front' | 'rear', onMuscleClick: (muscle: string) => void }) => {
   return (
     <svg 
       viewBox="0 0 400 600" 
-      // Base opacity is 0 (completely hidden). 
-      // It only jumps to 20% when you hover over a specific muscle.
-      className="absolute inset-0 w-full h-full opacity-0 hover:opacity-0 transition-opacity duration-300 cursor-pointer"
+      className="absolute inset-0 w-full h-full opacity-0 hover:opacity-0 transition-opacity duration-300 cursor-pointer z-20"
     >
       {side === 'front' ? (
         <>
-          {/* Chest */}
           <rect x="125" y="120" width="140" height="55" rx="15" onClick={() => onMuscleClick('Chest')} fill="white" />
-          {/* Abs */}
           <rect x="145" y="195" width="110" height="110" rx="15" onClick={() => onMuscleClick('Abs')} fill="white" />
-          {/* Left Shoulder */}
           <rect x="80" y="80" width="50" height="60" rx="25" transform="rotate(45 105 110)" onClick={() => onMuscleClick('Shoulders')} fill="white" />
-          {/* Right Shoulder */}
           <rect x="270" y="80" width="50" height="60" rx="25" transform="rotate(45 295 110)" onClick={() => onMuscleClick('Shoulders')} fill="white" />
-          {/* Biceps */}
           <rect x="75" y="160" width="45" height="60" rx="20" onClick={() => onMuscleClick('Bicep')} fill="white" />
           <rect x="270" y="160" width="45" height="60" rx="20" onClick={() => onMuscleClick('Bicep')} fill="white" />
-          {/* Forearms */}
           <rect x="50" y="200" width="40" height="90" rx="15" onClick={() => onMuscleClick('Forearms')} fill="white" />
           <rect x="290" y="200" width="40" height="90" rx="15" onClick={() => onMuscleClick('Forearms')} fill="white" />
-          {/* Quads */}
           <rect x="125" y="320" width="70" height="140" rx="20" onClick={() => onMuscleClick('Quads')} fill="white" />
           <rect x="205" y="320" width="70" height="140" rx="20" onClick={() => onMuscleClick('Quads')} fill="white" />
         </>
       ) : (
         <>
-          {/* Back */}
           <rect x="130" y="80" width="140" height="160" rx="20" onClick={() => onMuscleClick('Back')} fill="white" />
-          {/* Triceps */}
           <rect x="75" y="150" width="45" height="70" rx="20" onClick={() => onMuscleClick('Triceps')} fill="white" />
           <rect x="280" y="150" width="45" height="70" rx="20" onClick={() => onMuscleClick('Triceps')} fill="white" />
-          {/* Glutes */}
           <rect x="135" y="260" width="130" height="75" rx="30" onClick={() => onMuscleClick('Glutes')} fill="white" />
-          {/* Hamstrings */}
           <rect x="130" y="340" width="65" height="110" rx="20" onClick={() => onMuscleClick('Hamstrings')} fill="white" />
           <rect x="205" y="340" width="65" height="110" rx="20" onClick={() => onMuscleClick('Hamstrings')} fill="white" />
-          {/* Calves */}
           <rect x="135" y="460" width="55" height="100" rx="20" onClick={() => onMuscleClick('Calves')} fill="white" />
           <rect x="210" y="460" width="55" height="100" rx="20" onClick={() => onMuscleClick('Calves')} fill="white" />
         </>
@@ -57,12 +39,20 @@ const MuscleOverlay = ({ side, onMuscleClick }: { side: 'front' | 'rear', onMusc
     </svg>
   );
 };
+
 export default function Home() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [history, setHistory] = useState<WorkoutSession[]>([]);
+  const [activeModel, setActiveModel] = useState<'none' | 'front' | 'back'>('none');
 
   useEffect(() => {
     setProfile(storageService.getUserProfile());
+    setHistory(storageService.getHistory());
+
+    const handleLock = (e: any) => setActiveModel(e.detail.lockedModel);
+    window.addEventListener('model-lock', handleLock);
+    return () => window.removeEventListener('model-lock', handleLock);
   }, []);
 
   const handleMuscleClick = (muscle: string) => {
@@ -71,56 +61,97 @@ export default function Home() {
 
   if (!profile) return null;
 
-return (
+  return (
     <div className="h-[calc(100vh-64px)] overflow-hidden flex flex-col max-w-7xl mx-auto px-8 py-8">
-      <div className="text-center mb-6">
-        <h1 className="text-4xl font-black mb-1">SELECT MUSCLE GROUP</h1>
-        <p className="text-gray-400 text-xs">Click on anatomical model to target specific muscle group</p>
-      </div>
+      {/* Header Section */}
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-8 relative z-10"
+        >
+          <h1 className="text-5xl font-black mb-1 tracking-tighter">SELECT MUSCLE GROUP</h1>
+          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">Target specific anatomy to begin</p>
 
-      <div className="flex-1 flex items-center justify-center gap-12 min-h-0 mb-8">
-        {/* FRONT IMAGE CONTAINER - MADE LARGER */}
-        <div className="relative h-full max-h-[600px]">
-          <img 
-            src="https://i.postimg.cc/MKj9FJvY/vfwsecwe.png" 
-            alt="Anatomy Front" 
-            className="h-full w-auto object-contain"
-          />
-          <div className="absolute inset-0 w-full h-full">
-            <MuscleOverlay side="front" onMuscleClick={handleMuscleClick} />
+          {/* XP / Leveling System */}
+          <div className="max-w-md mx-auto w-full px-4">
+            <div className="flex justify-between items-end mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-black text-indigo-600">LEVEL 14</span>
+                <div className="w-1 h-1 bg-gray-300 rounded-full" />
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Elite Athlete</span>
+              </div>
+              <span className="text-[10px] font-black text-gray-500 tabular-nums">850 / 1000 XP</span>
+            </div>
+            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: '85%' }}
+                transition={{ duration: 2, ease: "circOut", delay: 0.5 }}
+                className="h-full bg-gradient-to-r from-indigo-600 to-blue-500"
+              />
+            </div>
           </div>
+        </motion.div>
+
+        {/* Anatomical Models Section */}
+        <div className="flex-1 flex items-center justify-center gap-16 min-h-0 mb-8">
+          {/* FRONT MODEL */}
+          <motion.div 
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ 
+              x: 0, 
+              opacity: 1,
+              scale: activeModel === 'front' ? 1.08 : 1
+            }}
+            transition={{ 
+              type: "spring", 
+              stiffness: activeModel === 'front' ? 300 : 50, 
+              damping: 20, 
+              delay: activeModel === 'front' ? 0 : 0.2 
+            }}
+            className="relative h-full max-h-[550px] aspect-[2/3] group"
+          >
+            <div className="absolute inset-0 bg-indigo-500/5 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <img 
+              src="https://i.postimg.cc/MKj9FJvY/vfwsecwe.png" 
+              alt="Anatomy Front" 
+              className="h-full w-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
+            />
+            <div className="absolute inset-0 w-full h-full z-20">
+              <MuscleOverlay side="front" onMuscleClick={handleMuscleClick} />
+            </div>
+          </motion.div>
+
+          {/* REAR MODEL */}
+          <motion.div 
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ 
+              x: 0, 
+              opacity: 1,
+              scale: activeModel === 'back' ? 1.08 : 1
+            }}
+            transition={{ 
+              type: "spring", 
+              stiffness: activeModel === 'back' ? 300 : 50, 
+              damping: 20, 
+              delay: activeModel === 'back' ? 0 : 0.4 
+            }}
+            className="relative h-full max-h-[550px] aspect-[2/3] group"
+          >
+            <div className="absolute inset-0 bg-blue-500/5 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <img 
+              src="https://i.postimg.cc/DzYCNvdr/evcawerva.png" 
+              alt="Anatomy Rear" 
+              className="h-full w-full object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
+            />
+            <div className="absolute inset-0 w-full h-full z-20">
+              <MuscleOverlay side="rear" onMuscleClick={handleMuscleClick} />
+            </div>
+          </motion.div>
         </div>
 
-        {/* BACK IMAGE CONTAINER - MADE LARGER */}
-        <div className="relative h-full max-h-[600px]">
-         <img 
-            src="https://i.postimg.cc/DzYCNvdr/evcawerva.png" 
-            alt="Anatomy Rear" 
-            className="h-full w-auto object-contain"
-          />
-          <div className="absolute inset-0 w-full h-full">
-            <MuscleOverlay side="rear" onMuscleClick={handleMuscleClick} />
-          </div>
-        </div>
+        <StatsBar profile={profile} history={history} />
       </div>
-
-      <div className="bg-black text-white rounded-[20px] p-8 grid grid-cols-3 gap-8 text-center shrink-0">
-        <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-2 opacity-70">Daily Streak</p>
-          <p className="text-4xl font-black">{profile.stats.dailyStreak}</p>
-        </div>
-        <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-2 opacity-70">Weight Progress</p>
-          <div className="flex items-center justify-center gap-2">
-            <p className="text-4xl font-black">{profile.stats.weightProgress}kg</p>
-            <TrendingUp className="text-green-400" size={24} />
-          </div>
-        </div>
-        <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-2 opacity-70">Total Days</p>
-          <p className="text-4xl font-black">{profile.stats.totalDays}</p>
-        </div>
-      </div>
-    </div>
   );
 }

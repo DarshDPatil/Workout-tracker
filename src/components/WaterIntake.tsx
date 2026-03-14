@@ -142,15 +142,14 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
     storageService.saveUserProfile(updatedProfile);
   };
 
+  // FIX: Removed window.confirm() which often gets blocked by browsers/iframes
   const resetToday = () => {
-    if (confirm('Are you sure you want to reset today\'s intake to 0?')) {
-      const updatedProfile = {
-        ...profile,
-        waterIntake: 0
-      };
-      onUpdate(updatedProfile);
-      storageService.saveUserProfile(updatedProfile);
-    }
+    const updatedProfile = {
+      ...profile,
+      waterIntake: 0
+    };
+    onUpdate(updatedProfile);
+    storageService.saveUserProfile(updatedProfile);
   };
 
   const percentage = Math.min(100, Math.round((profile.waterIntake / goal) * 100));
@@ -165,7 +164,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
         <div className="flex gap-2">
           <button 
             onClick={resetToday}
-            className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all"
+            className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all cursor-pointer z-10"
             title="Reset Today"
           >
             <RotateCcw size={16} />
@@ -288,7 +287,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
           </div>
         </div>
 
-        {/* Undo Button Overlay */}
+        {/* Undo Button Overlay - nudged slightly to not look awkward */}
         <AnimatePresence>
           {showUndo && (
             <motion.button
@@ -296,7 +295,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               onClick={handleUndo}
-              className="absolute -top-2 -right-2 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"
+              className="absolute -top-4 -right-4 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"
               title="Undo last addition"
             >
               <Undo2 size={16} />
@@ -304,15 +303,15 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
           )}
         </AnimatePresence>
 
-        {/* Floating Animations */}
+        {/* FIX: Floating Animations now start higher and end much higher so they don't overlap */}
         <AnimatePresence>
           {floatingTexts.map(t => (
             <motion.div
               key={t.id}
-              initial={{ y: 0, opacity: 0 }}
-              animate={{ y: -60, opacity: 1 }}
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: -100, opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 text-[#3B82F6] font-black text-sm pointer-events-none"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 text-[#3B82F6] font-black text-sm pointer-events-none z-20 drop-shadow-sm"
             >
               {t.text}
             </motion.div>

@@ -197,7 +197,7 @@ export default function Workout() {
       onDragEnd={handleDragEnd}
     >
       <div className="flex h-[calc(100vh-64px)] overflow-hidden">
-        <div className="w-1/3 border-r border-black p-8 overflow-y-auto bg-white custom-scrollbar">
+        <div className="w-1/3 border-r border-black p-8 overflow-y-auto custom-scrollbar">
           <WorkoutBuilderMenu 
             selectedMuscleGroup={selectedMuscleGroup}
             setSelectedMuscleGroup={handleMuscleSelect}
@@ -253,7 +253,7 @@ export default function Workout() {
           )}
 
           {!selectedMuscleGroup && (
-            <div className="flex-1 flex items-center justify-center text-center p-8 bg-gray-50 rounded-[20px] border-2 border-dashed border-gray-200 mt-8">
+            <div className="flex-1 flex items-center justify-center text-center p-8 bg-black/5 rounded-[20px] border-2 border-dashed border-gray-200 mt-8">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                 Select a muscle group to view exercises
               </p>
@@ -281,7 +281,7 @@ export default function Workout() {
               dropRef={setDropRef}
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center p-12 bg-[#F5F5F5]">
+            <div className="absolute inset-0 flex items-center justify-center p-12">
               <div className="max-w-md text-center space-y-6">
                 <div className="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mx-auto border border-gray-100">
                   <span className="text-4xl">⚠️</span>

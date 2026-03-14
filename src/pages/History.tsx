@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react'; // Added useMemo
 import { MUSCLE_GROUPS } from '../constants';
 import { WorkoutSession } from '../types';
 import { ChevronDown, Calendar } from 'lucide-react';
@@ -19,6 +19,15 @@ export default function History() {
     };
     fetchHistory();
   }, []);
+
+  // --- THE FIX: FILTER LOGIC ---
+  const filteredSessions = useMemo(() => {
+    if (!selectedMuscle) return sessions;
+    
+    return sessions.filter(session => 
+      session.muscleGroups.some(m => m.toUpperCase() === selectedMuscle.toUpperCase())
+    );
+  }, [sessions, selectedMuscle]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -53,8 +62,14 @@ export default function History() {
           <div className="text-center py-20 text-gray-400">Loading history...</div>
         ) : sessions.length === 0 ? (
           <div className="text-center py-20 text-gray-400">No sessions found. Start working out!</div>
+        ) : filteredSessions.length === 0 ? (
+          /* Added a specific message if a muscle has no workouts */
+          <div className="text-center py-20 text-gray-400 uppercase font-black italic">
+            No {selectedMuscle} workouts recorded yet.
+          </div>
         ) : (
-          sessions.map(session => (
+          /* Mapped over filteredSessions instead of sessions */
+          filteredSessions.map(session => (
             <div key={session.id} className="bg-white rounded-[20px] card-shadow border border-gray-100 overflow-hidden">
               <button 
                 onClick={() => setExpandedId(expandedId === session.id ? null : session.id)}

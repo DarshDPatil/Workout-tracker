@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Area, AreaChart } from 'recharts';
-import { Plus, Minus, Camera, ImageIcon, Dumbbell, Save, ArrowUp, ArrowDown } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Area, AreaChart } from 'recharts';
+import { Plus, Minus, Camera, ImageIcon, Dumbbell, ArrowUp, ArrowDown } from 'lucide-react';
 import { storageService } from '../services/storage';
 import { UserProfile, WorkoutSession } from '../types';
 import { calculateVolumeData } from '../services/volume';
@@ -39,7 +38,6 @@ export default function Progress() {
       newHistory.push({ date: new Date().toISOString(), weight: weightNum });
     }
 
-    // Sort by date to ensure graph is correct
     newHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     setWeightHistory(newHistory);
@@ -52,13 +50,6 @@ export default function Progress() {
       setProfile(updatedProfile);
       storageService.saveUserProfile(updatedProfile);
       setCurrentWeightInput(weightNum.toFixed(2));
-    }
-  };
-
-  const handleSave = () => {
-    if (profile) {
-      storageService.saveUserProfile(profile);
-      alert('Progress saved locally!');
     }
   };
 
@@ -78,7 +69,6 @@ export default function Progress() {
 
   const prs = profile.personalRecords;
   
-  // Format data for Recharts
   const chartData = weightHistory.map(h => ({
     date: h.date,
     formattedDate: new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit' }).format(new Date(h.date)),
@@ -90,8 +80,10 @@ export default function Progress() {
   return (
     <div className="max-w-7xl mx-auto px-8 py-12 space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* Main Column */}
+        
+        {/* Main Column (Left 2/3) */}
         <div className="lg:col-span-2 space-y-8">
+          
           {/* Volume Radar Chart */}
           <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100 flex flex-col">
             <h2 className="text-3xl font-black mb-8">Volume</h2>
@@ -112,7 +104,7 @@ export default function Progress() {
             </div>
           </div>
 
-          {/* Personal Records (Moved from sidebar) */}
+          {/* Personal Records */}
           <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100">
             <h2 className="text-2xl font-black mb-6">Personal Records</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -155,11 +147,72 @@ export default function Progress() {
               ))}
             </div>
           </div>
+
+          {/* Weight Graph (NOW MOVED UP INSIDE MAIN COLUMN) */}
+          <div className="bg-white rounded-[20px] p-0 card-shadow border border-gray-100 overflow-hidden flex min-h-[300px]">
+            <div className="w-40 bg-gray-50 flex flex-col items-center justify-center border-r border-gray-100 p-8 relative">
+              <h3 className="text-2xl font-black text-center leading-tight">Weight Graph</h3>
+              {weightTrend && !weightTrend.isNeutral && (
+                <div className={`mt-4 flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full ${weightTrend.isIncrease ? 'bg-[#10B981] text-white' : 'bg-[#EF4444] text-white'}`}>
+                  {weightTrend.isIncrease ? <ArrowUp size={10} strokeWidth={3} /> : <ArrowDown size={10} strokeWidth={3} />}
+                  {weightTrend.isIncrease ? '+' : '-'}{weightTrend.value}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 p-8 h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#000000" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#000000" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+                  <XAxis 
+                    dataKey="formattedDate" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }} 
+                    dy={10}
+                  />
+                  <YAxis 
+                    domain={['dataMin - 5', 'dataMax + 5']} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }} 
+                    tickFormatter={(val) => val.toFixed(2)}
+                    unit="kg" 
+                    dx={-10}
+                  />
+                  <Tooltip 
+                    formatter={(value: number) => [`${value.toFixed(2)} kg`, "Weight"]}
+                    contentStyle={{ 
+                      borderRadius: '12px', 
+                      border: 'none', 
+                      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                      fontWeight: 900,
+                      fontSize: '12px'
+                    }} 
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="weight" 
+                    stroke="#000000" 
+                    fillOpacity={1} 
+                    fill="url(#colorWeight)" 
+                    strokeWidth={4}
+                    dot={false}
+                    activeDot={{ r: 6, fill: '#000000', stroke: '#ffffff', strokeWidth: 2 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
-        {/* Widgets Column */}
+        {/* Widgets Column (Right Sidebar) */}
         <div className="space-y-8">
-          {/* Today's Weight */}
           <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100">
             <div className="flex justify-between items-start mb-6">
               <h2 className="text-lg font-black uppercase tracking-tight">Body Weight</h2>
@@ -169,20 +222,12 @@ export default function Progress() {
                   {weightTrend.isIncrease ? '+' : '-'}{weightTrend.value} KG
                 </div>
               )}
-              {weightTrend?.isNeutral && (
-                <div className="text-[10px] font-black px-2 py-1 rounded-lg bg-gray-100 text-gray-400">
-                  STABLE
-                </div>
-              )}
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between bg-gray-50 rounded-xl px-6 py-4 border border-gray-100">
                 <button 
                   className="p-2 hover:bg-white rounded-lg transition-all"
-                  onClick={() => {
-                    const newVal = (parseFloat(currentWeightInput) - 0.1).toFixed(2);
-                    setCurrentWeightInput(newVal);
-                  }}
+                  onClick={() => setCurrentWeightInput((parseFloat(currentWeightInput) - 0.1).toFixed(2))}
                 >
                   <Minus size={18} />
                 </button>
@@ -190,24 +235,15 @@ export default function Progress() {
                   <input
                     type="text"
                     value={currentWeightInput}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
-                        setCurrentWeightInput(val);
-                      }
-                    }}
+                    onChange={(e) => setCurrentWeightInput(e.target.value)}
                     onBlur={handleWeightSubmit}
-                    onKeyDown={(e) => e.key === 'Enter' && handleWeightSubmit()}
                     className="font-black text-2xl w-24 text-center bg-transparent focus:outline-none"
                   />
                   <span className="font-black text-sm text-gray-400 uppercase">kg</span>
                 </div>
                 <button 
                   className="p-2 hover:bg-white rounded-lg transition-all"
-                  onClick={() => {
-                    const newVal = (parseFloat(currentWeightInput) + 0.1).toFixed(2);
-                    setCurrentWeightInput(newVal);
-                  }}
+                  onClick={() => setCurrentWeightInput((parseFloat(currentWeightInput) + 0.1).toFixed(2))}
                 >
                   <Plus size={18} />
                 </button>
@@ -221,13 +257,11 @@ export default function Progress() {
             </div>
           </div>
 
-          {/* Water Intake */}
           <WaterIntake 
             profile={profile} 
             onUpdate={(updated) => setProfile(updated)} 
           />
           
-          {/* Today's Pic */}
           <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-black uppercase tracking-tight">Today's Pic</h2>
@@ -245,68 +279,6 @@ export default function Progress() {
               <p className="text-[10px] font-black uppercase tracking-widest">No Photo Yet</p>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Weight Graph */}
-      <div className="bg-white rounded-[20px] p-0 card-shadow border border-gray-100 overflow-hidden flex">
-        <div className="w-40 bg-gray-50 flex flex-col items-center justify-center border-r border-gray-100 p-8 relative">
-          <h3 className="text-2xl font-black text-center leading-tight">Weight Graph</h3>
-          {weightTrend && !weightTrend.isNeutral && (
-            <div className={`mt-4 flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full ${weightTrend.isIncrease ? 'bg-[#10B981] text-white' : 'bg-[#EF4444] text-white'}`}>
-              {weightTrend.isIncrease ? <ArrowUp size={10} strokeWidth={3} /> : <ArrowDown size={10} strokeWidth={3} />}
-              {weightTrend.isIncrease ? '+' : '-'}{weightTrend.value}
-            </div>
-          )}
-        </div>
-        <div className="flex-1 p-8 h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#000000" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#000000" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
-              <XAxis 
-                dataKey="formattedDate" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }} 
-                dy={10}
-              />
-              <YAxis 
-                domain={['dataMin - 5', 'dataMax + 5']} 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }} 
-                tickFormatter={(val) => val.toFixed(2)}
-                unit="kg" 
-                dx={-10}
-              />
-              <Tooltip 
-                formatter={(value: number) => [`${value.toFixed(2)} kg`, "Weight"]}
-                contentStyle={{ 
-                  borderRadius: '12px', 
-                  border: 'none', 
-                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                  fontWeight: 900,
-                  fontSize: '12px'
-                }} 
-              />
-              <Area 
-                type="monotone" 
-                dataKey="weight" 
-                stroke="#000000" 
-                fillOpacity={1} 
-                fill="url(#colorWeight)" 
-                strokeWidth={4}
-                dot={false}
-                activeDot={{ r: 6, fill: '#000000', stroke: '#ffffff', strokeWidth: 2 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
         </div>
       </div>
     </div>
