@@ -19,10 +19,10 @@ function Navbar({ onLogout }: { onLogout: () => void }) {
   ];
 
   return (
-    <nav className="bg-black text-white h-16 flex items-center justify-between px-8 sticky top-0 z-50">
+    <nav className="bg-white text-black h-16 flex items-center justify-between px-8 sticky top-0 z-50 border-b border-gray-100">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-white/10 rounded flex items-center justify-center border border-white/20">
-          <span className="font-black text-sm">M</span>
+        <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+          <span className="font-black text-sm text-white">M</span>
         </div>
       </div>
       
@@ -31,8 +31,8 @@ function Navbar({ onLogout }: { onLogout: () => void }) {
           <Link
             key={item.name}
             to={item.path}
-            className={`text-sm font-bold tracking-wider transition-colors hover:text-gray-400 ${
-              location.pathname === item.path ? 'border-b-2 border-white pb-1' : ''
+            className={`text-[10px] font-black tracking-[0.2em] transition-colors hover:text-black ${
+              location.pathname === item.path ? 'text-black border-b-2 border-black pb-1' : 'text-gray-400'
             }`}
           >
             {item.name}
@@ -41,21 +41,54 @@ function Navbar({ onLogout }: { onLogout: () => void }) {
       </div>
 
       <div className="flex items-center gap-6">
-        <button className="hover:opacity-70 transition-opacity">
+        <button className="text-gray-400 hover:text-black transition-colors">
           <Bell size={20} />
         </button>
         <button 
           onClick={onLogout}
-          className="hover:opacity-70 transition-opacity"
+          className="text-gray-400 hover:text-black transition-colors"
           title="Logout"
         >
           <LogOut size={20} />
         </button>
-        <div className="w-8 h-8 rounded-full bg-gray-600 overflow-hidden border border-white/20">
+        <div className="w-8 h-8 rounded-full bg-gray-100 overflow-hidden">
           <img src="https://picsum.photos/seed/user/100/100" alt="Profile" referrerPolicy="no-referrer" />
         </div>
       </div>
     </nav>
+  );
+}
+
+function AppContent({ user, handleLogout, handleLogin }: { user: any, handleLogout: () => void, handleLogin: (data: any) => void }) {
+  const location = useLocation();
+  const mode = location.pathname === '/' ? 'home' : 'standard';
+
+  return (
+    <div className="min-h-screen flex flex-col relative">
+      <InteractiveBackground mode={mode} />
+      {user ? (
+        <>
+          <Navbar onLogout={handleLogout} />
+          <main className="flex-1 relative z-10">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/workout" element={<Workout />} />
+              <Route path="/workout/:muscle" element={<Workout />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </main>
+        </>
+      ) : (
+        <main className="flex-1 relative z-10">
+          <Routes>
+            <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
+            <Route path="*" element={<Navigate to="/auth" />} />
+          </Routes>
+        </main>
+      )}
+    </div>
   );
 }
 
@@ -82,10 +115,12 @@ export default function App() {
   if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center relative">
-        <InteractiveBackground />
+        <InteractiveBackground mode="standard" />
         <div className="animate-pulse flex flex-col items-center gap-4 relative z-10">
-          <div className="w-12 h-12 bg-black rounded-xl"></div>
-          <p className="font-bold tracking-widest text-sm">MOMENTUM</p>
+          <div className="w-12 h-12 bg-indigo-600/10 rounded-[12px] flex items-center justify-center border border-indigo-500/20">
+            <span className="font-black text-xl text-indigo-600">M</span>
+          </div>
+          <p className="tech-label opacity-60">INITIALIZING SYSTEM...</p>
         </div>
       </div>
     );
@@ -93,31 +128,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col relative">
-        <InteractiveBackground />
-        {user ? (
-          <>
-            <Navbar onLogout={handleLogout} />
-            <main className="flex-1 relative z-10">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/workout" element={<Workout />} />
-                <Route path="/workout/:muscle" element={<Workout />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/progress" element={<Progress />} />
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-            </main>
-          </>
-        ) : (
-          <main className="flex-1 relative z-10">
-            <Routes>
-              <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
-              <Route path="*" element={<Navigate to="/auth" />} />
-            </Routes>
-          </main>
-        )}
-      </div>
+      <AppContent user={user} handleLogout={handleLogout} handleLogin={handleLogin} />
     </Router>
   );
 }

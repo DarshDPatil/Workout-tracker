@@ -17,8 +17,8 @@ const MuscleOverlay = ({ side, onMuscleClick }: { side: 'front' | 'rear', onMusc
           <rect x="145" y="195" width="110" height="110" rx="15" onClick={() => onMuscleClick('Abs')} fill="white" />
           <rect x="80" y="80" width="50" height="60" rx="25" transform="rotate(45 105 110)" onClick={() => onMuscleClick('Shoulders')} fill="white" />
           <rect x="270" y="80" width="50" height="60" rx="25" transform="rotate(45 295 110)" onClick={() => onMuscleClick('Shoulders')} fill="white" />
-          <rect x="75" y="160" width="45" height="60" rx="20" onClick={() => onMuscleClick('Bicep')} fill="white" />
-          <rect x="270" y="160" width="45" height="60" rx="20" onClick={() => onMuscleClick('Bicep')} fill="white" />
+          <rect x="75" y="160" width="45" height="60" rx="20" onClick={() => onMuscleClick('Biceps')} fill="white" />
+          <rect x="270" y="160" width="45" height="60" rx="20" onClick={() => onMuscleClick('Biceps')} fill="white" />
           <rect x="50" y="200" width="40" height="90" rx="15" onClick={() => onMuscleClick('Forearms')} fill="white" />
           <rect x="290" y="200" width="40" height="90" rx="15" onClick={() => onMuscleClick('Forearms')} fill="white" />
           <rect x="125" y="320" width="70" height="140" rx="20" onClick={() => onMuscleClick('Quads')} fill="white" />
@@ -77,13 +77,13 @@ export default function Home() {
           <div className="max-w-md mx-auto w-full px-4">
             <div className="flex justify-between items-end mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-indigo-600">LEVEL 14</span>
-                <div className="w-1 h-1 bg-gray-300 rounded-full" />
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Elite Athlete</span>
+                <span className="tech-label text-indigo-600 text-sm">LEVEL 14</span>
+                <div className="w-1 h-1 bg-white/20 rounded-full" />
+                <span className="tech-label text-slate-400">Elite Athlete</span>
               </div>
-              <span className="text-[10px] font-black text-gray-500 tabular-nums">850 / 1000 XP</span>
+              <span className="hud-data text-[10px] text-slate-500">850 / 1000 XP</span>
             </div>
-            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+            <div className="h-1.5 w-full bg-black/20 rounded-[10px] overflow-hidden border border-white/10">
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: '85%' }}

@@ -4,7 +4,9 @@ import { Plus, Minus, Camera, ImageIcon, Dumbbell, ArrowUp, ArrowDown } from 'lu
 import { storageService } from '../services/storage';
 import { UserProfile, WorkoutSession } from '../types';
 import { calculateVolumeData } from '../services/volume';
+import { exerciseDatabase } from '../constants/exerciseDatabase';
 import WaterIntake from '../components/WaterIntake';
+import DailyPhotoWidget from '../components/DailyPhotoWidget';
 
 export default function Progress() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -85,13 +87,13 @@ export default function Progress() {
         <div className="lg:col-span-2 space-y-8">
           
           {/* Volume Radar Chart */}
-          <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100 flex flex-col">
-            <h2 className="text-3xl font-black mb-8">Volume</h2>
+          <div className="glass-liquid-terminal p-8 flex flex-col">
+            <h2 className="text-3xl font-black mb-8 text-slate-950 uppercase tracking-tighter">Volume</h2>
             <div className="h-[400px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={volumeData}>
-                  <PolarGrid stroke="#E5E7EB" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#000', fontSize: 10, fontWeight: 900 }} />
+                  <PolarGrid stroke="rgba(255,255,255,0.2)" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#4F46E5', fontSize: 10, fontWeight: 900, fontFamily: 'JetBrains Mono' }} />
                   <Radar
                     name="Volume"
                     dataKey="A"
@@ -105,25 +107,25 @@ export default function Progress() {
           </div>
 
           {/* Personal Records */}
-          <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100">
-            <h2 className="text-2xl font-black mb-6">Personal Records</h2>
+          <div className="glass-liquid-terminal p-8">
+            <h2 className="text-2xl font-black mb-6 text-slate-950 uppercase tracking-tighter">Personal Records</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 { label: 'Squat', key: 'squat', icon: <Dumbbell size={16} /> },
                 { label: 'Benchpress', key: 'bench', icon: <Dumbbell size={16} /> },
                 { label: 'Deadlift', key: 'deadlift', icon: <Dumbbell size={16} /> },
               ].map((pr) => (
-                <div key={pr.key} className="flex flex-col gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <div key={pr.key} className="flex flex-col gap-3 bg-white/5 backdrop-blur-md rounded-[20px] p-4 border border-white/10">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white">
+                    <div className="w-8 h-8 bg-indigo-600/20 rounded-[10px] flex items-center justify-center text-indigo-600 border border-indigo-500/30">
                       {pr.icon}
                     </div>
-                    <p className="text-xs font-black uppercase tracking-wider">{pr.label}</p>
+                    <p className="tech-label">{pr.label}</p>
                   </div>
-                  <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-gray-100">
+                  <div className="flex items-center justify-between etched-well px-3 py-2">
                     <button 
                       onClick={() => setPrs({ ...prs, [pr.key]: Math.max(0, (prs as any)[pr.key] - 1) })}
-                      className="hover:text-indigo-600 transition-colors"
+                      className="text-slate-400 hover:text-indigo-600 transition-colors"
                     >
                       <Minus size={14} />
                     </button>
@@ -132,13 +134,13 @@ export default function Progress() {
                         type="number"
                         value={(prs as any)[pr.key]}
                         onChange={(e) => setPrs({ ...prs, [pr.key]: Number(e.target.value) })}
-                        className="text-sm font-black w-12 text-center bg-transparent focus:outline-none"
+                        className="hud-data text-sm w-12 text-center bg-transparent focus:outline-none"
                       />
-                      <span className="text-[10px] font-black text-gray-400 uppercase">kg</span>
+                      <span className="font-mono font-bold text-[10px] text-indigo-600 uppercase">kg</span>
                     </div>
                     <button 
                       onClick={() => setPrs({ ...prs, [pr.key]: (prs as any)[pr.key] + 1 })}
-                      className="hover:text-indigo-600 transition-colors"
+                      className="text-slate-400 hover:text-indigo-600 transition-colors"
                     >
                       <Plus size={14} />
                     </button>
@@ -149,11 +151,11 @@ export default function Progress() {
           </div>
 
           {/* Weight Graph (NOW MOVED UP INSIDE MAIN COLUMN) */}
-          <div className="bg-white rounded-[20px] p-0 card-shadow border border-gray-100 overflow-hidden flex min-h-[300px]">
-            <div className="w-40 bg-gray-50 flex flex-col items-center justify-center border-r border-gray-100 p-8 relative">
-              <h3 className="text-2xl font-black text-center leading-tight">Weight Graph</h3>
+          <div className="glass-liquid-terminal p-0 overflow-hidden flex min-h-[300px]">
+            <div className="w-40 bg-white/5 backdrop-blur-md flex flex-col items-center justify-center border-r border-white/10 p-8 relative">
+              <h3 className="text-2xl font-black text-center leading-tight text-slate-950 uppercase tracking-tighter">Weight Graph</h3>
               {weightTrend && !weightTrend.isNeutral && (
-                <div className={`mt-4 flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full ${weightTrend.isIncrease ? 'bg-[#10B981] text-white' : 'bg-[#EF4444] text-white'}`}>
+                <div className={`mt-4 flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full ${weightTrend.isIncrease ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30' : 'bg-red-500/20 text-red-600 border border-red-500/30'}`}>
                   {weightTrend.isIncrease ? <ArrowUp size={10} strokeWidth={3} /> : <ArrowDown size={10} strokeWidth={3} />}
                   {weightTrend.isIncrease ? '+' : '-'}{weightTrend.value}
                 </div>
@@ -164,23 +166,23 @@ export default function Progress() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#000000" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#000000" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#4F46E5" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
                   <XAxis 
                     dataKey="formattedDate" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }} 
+                    tick={{ fontSize: 10, fontWeight: 900, fill: '#4F46E5', fontFamily: 'JetBrains Mono' }} 
                     dy={10}
                   />
                   <YAxis 
                     domain={['dataMin - 5', 'dataMax + 5']} 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }} 
+                    tick={{ fontSize: 10, fontWeight: 900, fill: '#4F46E5', fontFamily: 'JetBrains Mono' }} 
                     tickFormatter={(val) => val.toFixed(2)}
                     unit="kg" 
                     dx={-10}
@@ -188,22 +190,24 @@ export default function Progress() {
                   <Tooltip 
                     formatter={(value: number) => [`${value.toFixed(2)} kg`, "Weight"]}
                     contentStyle={{ 
-                      borderRadius: '12px', 
-                      border: 'none', 
-                      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                      borderRadius: '16px', 
+                      border: '1px solid rgba(255,255,255,0.2)', 
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
                       fontWeight: 900,
-                      fontSize: '12px'
+                      fontSize: '12px',
+                      backgroundColor: 'rgba(255,255,255,0.8)',
+                      backdropFilter: 'blur(10px)'
                     }} 
                   />
                   <Area 
                     type="monotone" 
                     dataKey="weight" 
-                    stroke="#000000" 
+                    stroke="#4F46E5" 
                     fillOpacity={1} 
                     fill="url(#colorWeight)" 
                     strokeWidth={4}
                     dot={false}
-                    activeDot={{ r: 6, fill: '#000000', stroke: '#ffffff', strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: '#4F46E5', stroke: '#ffffff', strokeWidth: 2 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -213,20 +217,20 @@ export default function Progress() {
 
         {/* Widgets Column (Right Sidebar) */}
         <div className="space-y-8">
-          <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100">
+          <div className="glass-liquid-terminal p-8">
             <div className="flex justify-between items-start mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight">Body Weight</h2>
+              <h2 className="text-lg font-black uppercase tracking-tight text-slate-950">Body Weight</h2>
               {weightTrend && !weightTrend.isNeutral && (
-                <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${weightTrend.isIncrease ? 'bg-emerald-50 text-[#10B981]' : 'bg-red-50 text-[#EF4444]'}`}>
+                <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${weightTrend.isIncrease ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30' : 'bg-red-500/20 text-red-600 border border-red-500/30'}`}>
                   {weightTrend.isIncrease ? <ArrowUp size={10} strokeWidth={3} /> : <ArrowDown size={10} strokeWidth={3} />}
                   {weightTrend.isIncrease ? '+' : '-'}{weightTrend.value} KG
                 </div>
               )}
             </div>
             <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between bg-gray-50 rounded-xl px-6 py-4 border border-gray-100">
+              <div className="flex items-center justify-between etched-well px-6 py-4">
                 <button 
-                  className="p-2 hover:bg-white rounded-lg transition-all"
+                  className="p-2 text-slate-400 hover:text-indigo-600 transition-all"
                   onClick={() => setCurrentWeightInput((parseFloat(currentWeightInput) - 0.1).toFixed(2))}
                 >
                   <Minus size={18} />
@@ -237,12 +241,12 @@ export default function Progress() {
                     value={currentWeightInput}
                     onChange={(e) => setCurrentWeightInput(e.target.value)}
                     onBlur={handleWeightSubmit}
-                    className="font-black text-2xl w-24 text-center bg-transparent focus:outline-none"
+                    className="hud-data text-2xl w-24 text-center bg-transparent focus:outline-none"
                   />
-                  <span className="font-black text-sm text-gray-400 uppercase">kg</span>
+                  <span className="font-mono font-bold text-[10px] text-indigo-600 uppercase">kg</span>
                 </div>
                 <button 
-                  className="p-2 hover:bg-white rounded-lg transition-all"
+                  className="p-2 text-slate-400 hover:text-indigo-600 transition-all"
                   onClick={() => setCurrentWeightInput((parseFloat(currentWeightInput) + 0.1).toFixed(2))}
                 >
                   <Plus size={18} />
@@ -250,7 +254,7 @@ export default function Progress() {
               </div>
               <button 
                 onClick={handleWeightSubmit}
-                className="bg-black text-white w-full py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-gray-800 transition-all shadow-lg shadow-black/10"
+                className="mercury-capsule text-white w-full py-4 font-bold uppercase tracking-[0.25em] text-[10px] hover:scale-[1.02] transition-all"
               >
                 Update Weight
               </button>
@@ -262,23 +266,7 @@ export default function Progress() {
             onUpdate={(updated) => setProfile(updated)} 
           />
           
-          <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight">Today's Pic</h2>
-              <div className="flex gap-2">
-                <button className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center hover:bg-black hover:text-white transition-all border border-gray-100">
-                  <ImageIcon size={18} />
-                </button>
-                <button className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center hover:bg-black hover:text-white transition-all border border-gray-100">
-                  <Camera size={18} />
-                </button>
-              </div>
-            </div>
-            <div className="aspect-square bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 gap-2">
-              <Camera size={32} strokeWidth={1.5} />
-              <p className="text-[10px] font-black uppercase tracking-widest">No Photo Yet</p>
-            </div>
-          </div>
+          <DailyPhotoWidget />
         </div>
       </div>
     </div>

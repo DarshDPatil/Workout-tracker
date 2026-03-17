@@ -16,10 +16,10 @@ export const EXERCISES: Exercise[] = [
   { id: '13', name: 'Deadlift', type: 'Compound', category: 'Free Weight', muscleGroup: 'Back' },
   { id: '14', name: 'Overhead Press', type: 'Compound', category: 'Free Weight', muscleGroup: 'Shoulders' },
   { id: '15', name: 'Lateral Raise', type: 'Isolated', category: 'Free Weight', muscleGroup: 'Shoulders' },
-  { id: '16', name: 'Bicep Curl', type: 'Isolated', category: 'Free Weight', muscleGroup: 'Bicep' },
+  { id: '16', name: 'Bicep Curl', type: 'Isolated', category: 'Free Weight', muscleGroup: 'Biceps' },
   { id: '17', name: 'Tricep Pushdown', type: 'Isolated', category: 'Cables', muscleGroup: 'Triceps' },
 ];
 
 export const MUSCLE_GROUPS = [
-  'Chest', 'Back', 'Shoulders', 'Bicep', 'Triceps', 'Forearms', 'Abs', 'Quads', 'Hamstrings', 'Glutes', 'Calves'
+  'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Forearms', 'Abs', 'Quads', 'Hamstrings', 'Glutes', 'Calves'
 ];

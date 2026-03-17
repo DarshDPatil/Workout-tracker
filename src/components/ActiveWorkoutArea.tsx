@@ -70,35 +70,44 @@ const ActiveWorkoutArea: React.FC<ActiveWorkoutAreaProps> = ({
   return (
     <div 
       ref={dropRef}
-      className={`flex-1 p-12 overflow-y-auto transition-colors ${isOver ? 'bg-black/5' : 'bg-[#F5F5F5]'}`}
+      className={`flex-1 h-full p-6 overflow-y-auto transition-colors custom-scrollbar ${isOver ? 'bg-gray-50' : 'bg-transparent'}`}
     >
       {/* Workout Header & Name Input */}
-      <div className="flex justify-between items-center mb-12">
-        <input
-          type="text"
-          value={workoutName}
-          onChange={(e) => setWorkoutName(e.target.value)}
-          className="text-5xl font-black uppercase bg-transparent border-b-4 border-transparent focus:border-black focus:outline-none w-2/3"
-          placeholder="Enter Workout Name"
-        />
+      <div className="flex flex-row justify-between items-center w-full mb-8 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+        <div className="space-y-1 pr-8 flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Session</span>
+          </div>
+          <input
+            type="text"
+            value={workoutName}
+            onChange={(e) => setWorkoutName(e.target.value)}
+            className="text-3xl font-black uppercase bg-transparent border-b-2 border-transparent focus:border-gray-200 focus:outline-none w-full transition-colors text-black tracking-tight"
+            placeholder="Workout Name"
+          />
+        </div>
+
         <button 
           onClick={onFinish}
           disabled={saving || activeExercises.length === 0}
-          className="flex items-center gap-2 bg-black text-white px-8 py-3 rounded-xl font-bold hover:opacity-80 disabled:opacity-30 transition-all"
+          className="flex-shrink-0 bg-black px-8 py-4 rounded-2xl text-white text-sm font-black tracking-widest uppercase hover:bg-gray-800 active:scale-95 transition-all shadow-lg shadow-black/20 disabled:opacity-50 disabled:hover:bg-black disabled:active:scale-100 flex items-center gap-3"
         >
-          {saving ? 'SAVING...' : <><Save size={18} /> FINISH</>}
+          <Save size={18} />
+          {saving ? 'Saving...' : 'Finish Workout'}
         </button>
       </div>
 
       {/* Active Exercises List */}
       <div className="space-y-6">
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {activeExercises.map((ex) => (
             <motion.div 
               key={ex.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
+              layout
             >
               <WorkoutLogger 
                 exercise={ex}
@@ -117,43 +126,49 @@ const ActiveWorkoutArea: React.FC<ActiveWorkoutAreaProps> = ({
           {!isAddingCustom ? (
             <div 
               onClick={() => setIsAddingCustom(true)}
-              className={`h-64 border-2 border-dashed rounded-[20px] flex flex-col items-center justify-center gap-4 transition-colors cursor-pointer ${isOver ? 'border-black text-black bg-black/5' : 'border-gray-200 text-gray-400 hover:border-gray-400'}`}
+              className="h-32 border-2 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-gray-300 group"
             >
-              <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-colors ${isOver ? 'border-black' : 'border-gray-200'}`}>
-                <Plus size={24} />
+              <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <Plus size={20} className="text-gray-400 group-hover:text-black transition-colors" />
               </div>
-              <p className="text-sm font-medium">click/drag and drop exercise here</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Add Custom Exercise</p>
             </div>
           ) : (
-            <div className="bg-white p-8 rounded-[20px] border-2 border-black card-shadow">
-              <h3 className="text-xl font-black mb-4 uppercase">Add Custom Exercise</h3>
-              <input 
-                type="text"
-                autoFocus
-                placeholder={`Name your custom ${currentMuscleGroup || 'workout'} exercise...`}
-                className="w-full px-6 py-4 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none mb-6"
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddCustom()}
-              />
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100"
+            >
+              <h3 className="text-lg font-black mb-4 uppercase tracking-tight text-black">Custom Exercise</h3>
+              <div className="bg-gray-50 rounded-2xl px-6 mb-6 border border-gray-100">
+                <input 
+                  type="text"
+                  autoFocus
+                  placeholder={`Name your ${currentMuscleGroup || 'workout'} exercise...`}
+                  className="w-full py-4 bg-transparent focus:outline-none text-base font-bold text-black placeholder:text-gray-400"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddCustom()}
+                />
+              </div>
               <div className="flex gap-4">
                 <button 
                   onClick={handleAddCustom}
-                  className="flex-1 bg-black text-white py-4 rounded-xl font-bold hover:opacity-80 transition-all"
+                  className="flex-1 bg-black text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-800 transition-colors text-xs shadow-lg shadow-black/20"
                 >
-                  ADD
+                  Add Exercise
                 </button>
                 <button 
                   onClick={() => {
                     setIsAddingCustom(false);
                     setCustomName('');
                   }}
-                  className="flex-1 bg-gray-100 text-gray-500 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all"
+                  className="flex-1 bg-gray-100 text-gray-500 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-200 hover:text-black transition-colors text-xs"
                 >
-                  CANCEL
+                  Cancel
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

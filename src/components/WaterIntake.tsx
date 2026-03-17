@@ -142,7 +142,6 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
     storageService.saveUserProfile(updatedProfile);
   };
 
-  // FIX: Removed window.confirm() which often gets blocked by browsers/iframes
   const resetToday = () => {
     const updatedProfile = {
       ...profile,
@@ -153,25 +152,25 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
   };
 
   const percentage = Math.min(100, Math.round((profile.waterIntake / goal) * 100));
-  const radius = 45;
+  const radius = 70;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="bg-white rounded-[20px] p-8 card-shadow border border-gray-100 flex flex-col items-center relative overflow-hidden">
+    <div className="glass-liquid-terminal p-8 flex flex-col items-center relative overflow-hidden">
       <div className="w-full flex justify-between items-center mb-6">
-        <h2 className="text-lg font-black uppercase">Water Intake</h2>
+        <h2 className="text-lg font-black uppercase text-slate-950 tracking-tight">Water Intake</h2>
         <div className="flex gap-2">
           <button 
             onClick={resetToday}
-            className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all cursor-pointer z-10"
+            className="p-2 rounded-[10px] bg-white/5 backdrop-blur-md text-slate-400 hover:bg-red-500/20 hover:text-red-500 hover:border-red-500/30 border border-white/10 transition-all cursor-pointer z-10"
             title="Reset Today"
           >
             <RotateCcw size={16} />
           </button>
           <button 
             onClick={() => setShowSettings(!showSettings)}
-            className={`p-2 rounded-lg transition-all ${showSettings ? 'bg-black text-white' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+            className={`p-2 rounded-[10px] border transition-all ${showSettings ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-white/5 backdrop-blur-md text-slate-400 hover:bg-white/10 border-white/10'}`}
           >
             <Settings size={16} />
           </button>
@@ -185,31 +184,31 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="w-full mb-6 bg-gray-50 rounded-xl p-4 border border-gray-100 overflow-hidden"
+            className="w-full mb-6 bg-black/5 backdrop-blur-md rounded-[14px] p-4 border border-white/10 overflow-hidden"
           >
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-black uppercase">Goal Mode</span>
+              <span className="tech-label text-slate-950">Goal Mode</span>
               <button 
                 onClick={toggleGoalMode}
-                className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${profile.waterGoalMode === 'auto' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'}`}
+                className={`px-3 py-1 rounded-full text-[10px] font-black transition-all ${profile.waterGoalMode === 'auto' ? 'bg-indigo-600 text-white' : 'bg-white/10 text-slate-500 border border-white/20'}`}
               >
                 {profile.waterGoalMode === 'auto' ? 'AUTO (WEIGHT)' : 'MANUAL'}
               </button>
             </div>
             {profile.waterGoalMode === 'manual' && (
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase">Daily Goal (L)</span>
+                <span className="tech-label text-slate-950">Daily Goal (L)</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
                     step="0.1"
                     value={tempGoal}
                     onChange={(e) => setTempGoal(e.target.value)}
-                    className="w-16 px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold focus:outline-none"
+                    className="w-16 px-2 py-1 etched-well rounded-[8px] text-xs font-bold focus:outline-none hud-data"
                   />
                   <button 
                     onClick={handleGoalUpdate}
-                    className="p-1 bg-black text-white rounded hover:opacity-80"
+                    className="p-1 bg-indigo-600 text-white rounded-[8px] hover:opacity-80"
                   >
                     <Check size={12} />
                   </button>
@@ -230,13 +229,13 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
             stroke="currentColor"
             strokeWidth="8"
             fill="transparent"
-            className="text-gray-100"
+            className="text-black/5"
           />
           <motion.circle
             cx="96"
             cy="96"
             r={radius}
-            stroke="#3B82F6"
+            stroke="#4F46E5"
             strokeWidth="8"
             strokeDasharray={circumference}
             initial={{ strokeDashoffset: circumference }}
@@ -253,7 +252,8 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
             key={percentage}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-3xl font-black text-[#3B82F6]"
+            // FIX: Changed tracking-tight to tracking-normal so numbers don't overlap
+            className="text-3xl font-black text-indigo-600 tracking-normal"
           >
             {percentage}%
           </motion.span>
@@ -269,9 +269,9 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
                   onChange={(e) => setTempIntake(e.target.value)}
                   onBlur={handleIntakeUpdate}
                   onKeyDown={(e) => e.key === 'Enter' && handleIntakeUpdate()}
-                  className="w-12 text-center text-xs font-bold border-b border-blue-500 focus:outline-none"
+                  className="w-12 text-center text-xs font-bold border-b border-indigo-500 bg-transparent text-slate-950 focus:outline-none font-mono"
                 />
-                <span className="text-[10px] font-bold text-gray-400">L</span>
+                <span className="font-mono font-bold text-[10px] text-slate-400">L</span>
               </div>
             ) : (
               <button 
@@ -279,7 +279,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
                   setTempIntake(profile.waterIntake.toString());
                   setIsEditingIntake(true);
                 }}
-                className="text-xs font-bold text-gray-400 hover:text-blue-500 transition-colors"
+                className="font-mono font-bold text-[10px] tracking-wider text-slate-400 hover:text-indigo-600 transition-colors mt-1"
               >
                 {profile.waterIntake.toFixed(1)}L / {goal}L
               </button>
@@ -287,7 +287,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
           </div>
         </div>
 
-        {/* Undo Button Overlay - nudged slightly to not look awkward */}
+        {/* Undo Button Overlay */}
         <AnimatePresence>
           {showUndo && (
             <motion.button
@@ -295,7 +295,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               onClick={handleUndo}
-              className="absolute -top-4 -right-4 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"
+              className="absolute -top-4 -right-4 w-10 h-10 bg-indigo-600 text-white rounded-[14px] flex items-center justify-center shadow-[0_0_15px_rgba(79,70,229,0.5)] hover:scale-110 transition-transform z-10 border border-indigo-400/30"
               title="Undo last addition"
             >
               <Undo2 size={16} />
@@ -303,7 +303,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
           )}
         </AnimatePresence>
 
-        {/* FIX: Floating Animations now start higher and end much higher so they don't overlap */}
+        {/* Floating Animations */}
         <AnimatePresence>
           {floatingTexts.map(t => (
             <motion.div
@@ -311,7 +311,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: -100, opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 text-[#3B82F6] font-black text-sm pointer-events-none z-20 drop-shadow-sm"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 text-indigo-600 font-black text-sm pointer-events-none z-20 drop-shadow-sm font-mono"
             >
               {t.text}
             </motion.div>
@@ -323,28 +323,28 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
       <div className="flex gap-4 mb-6">
         <button 
           onClick={() => addWater(0.25)}
-          className="w-12 h-12 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center hover:bg-[#3B82F6] hover:text-white transition-all group"
+          className="w-12 h-12 rounded-[14px] bg-indigo-600/10 text-indigo-600 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all group border border-indigo-500/20"
           title="Add 250ml"
         >
           <GlassWater size={20} className="group-hover:scale-110 transition-transform" />
         </button>
         <button 
           onClick={() => addWater(0.5)}
-          className="w-12 h-12 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center hover:bg-[#3B82F6] hover:text-white transition-all group"
+          className="w-12 h-12 rounded-[14px] bg-indigo-600/10 text-indigo-600 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all group border border-indigo-500/20"
           title="Add 500ml"
         >
           <CupSoda size={20} className="group-hover:scale-110 transition-transform" />
         </button>
         <button 
           onClick={() => addWater(0.75)}
-          className="w-12 h-12 rounded-xl bg-blue-50 text-[#3B82F6] flex items-center justify-center hover:bg-[#3B82F6] hover:text-white transition-all group"
+          className="w-12 h-12 rounded-[14px] bg-indigo-600/10 text-indigo-600 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all group border border-indigo-500/20"
           title="Add 750ml"
         >
           <Droplets size={20} className="group-hover:scale-110 transition-transform" />
         </button>
         <button 
           onClick={() => setShowCustomInput(!showCustomInput)}
-          className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${showCustomInput ? 'bg-black text-white' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+          className={`w-12 h-12 rounded-[14px] flex items-center justify-center transition-all border ${showCustomInput ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-white/5 backdrop-blur-md text-slate-400 hover:bg-white/10 border-white/10'}`}
         >
           <Plus size={20} />
         </button>
@@ -365,11 +365,11 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
-              className="flex-1 px-4 py-2 bg-gray-50 rounded-lg border border-gray-100 focus:outline-none text-sm font-bold"
+              className="flex-1 px-4 py-2 etched-well rounded-[14px] focus:outline-none hud-data"
             />
             <button 
               onClick={handleCustomSubmit}
-              className="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold hover:opacity-80 transition-all"
+              className="mercury-capsule text-white px-4 py-2 font-bold uppercase tracking-wider text-[10px] hover:scale-[1.02] transition-all"
             >
               ADD
             </button>

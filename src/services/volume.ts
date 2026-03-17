@@ -1,4 +1,5 @@
 import { WorkoutSession } from '../types';
+import { exerciseDatabase } from '../constants/exerciseDatabase';
 
 export const EXERCISE_MUSCLE_MAP: Record<string, Record<string, number>> = {
   "Flat Dumbbell Benchpress": { CHEST: 1.0, TRICEPS: 0.4, SHOULDERS: 0.4 },
@@ -56,6 +57,8 @@ export function calculateVolumeData(sessions: WorkoutSession[]) {
           let mappedMuscle = muscle.toUpperCase();
           if (mappedMuscle === "THIGHS") mappedMuscle = "QUADS";
           if (mappedMuscle === "HAMSTRING") mappedMuscle = "HAMSTRINGS";
+          if (mappedMuscle === "BICEP") mappedMuscle = "BICEPS";
+          if (mappedMuscle === "AB") mappedMuscle = "ABS";
 
           if (rawVolume[mappedMuscle] !== undefined) {
             rawVolume[mappedMuscle] += (completedSets * percentage);
@@ -64,8 +67,21 @@ export function calculateVolumeData(sessions: WorkoutSession[]) {
       } else {
         // If it's NOT in the map (95% of exercises), just give 100% volume to its primary muscle group!
         let primaryMuscle = (ex.muscleGroup || "").toUpperCase();
+        
+        // Fallback for old saved data where muscleGroup might be undefined
+        if (!primaryMuscle) {
+          for (const [group, exercises] of Object.entries(exerciseDatabase)) {
+            if (exercises.some(e => e.name === ex.name)) {
+              primaryMuscle = group.toUpperCase();
+              break;
+            }
+          }
+        }
+
         if (primaryMuscle === "THIGHS") primaryMuscle = "QUADS";
         if (primaryMuscle === "HAMSTRING") primaryMuscle = "HAMSTRINGS";
+        if (primaryMuscle === "BICEP") primaryMuscle = "BICEPS";
+        if (primaryMuscle === "AB") primaryMuscle = "ABS";
 
         if (rawVolume[primaryMuscle] !== undefined) {
           rawVolume[primaryMuscle] += completedSets;

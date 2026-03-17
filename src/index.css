@@ -1,13 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --radius-20: 20px;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 @layer base {
   body {
-    @apply bg-[#F5F5F5] text-[#141414] font-sans;
+    @apply bg-[#F8F9FD] text-[#141414] font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 2px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #4F46E5;
+    border-radius: 10px;
+  }
+  
+  .glass-liquid {
+    @apply bg-white/5 backdrop-blur-[80px] rounded-[40px] border border-white/30 shadow-2xl ring-1 ring-inset ring-white/20;
+    box-shadow: inset 0 2px 10px rgba(255,255,255,0.6), 0 20px 40px rgba(0,0,0,0.1);
+  }
+
+  .glass-liquid-terminal {
+    @apply bg-white/5 backdrop-blur-[80px] rounded-[32px] border border-white/30 shadow-2xl ring-1 ring-inset ring-white/20;
+    box-shadow: inset 0 2px 10px rgba(255,255,255,0.6), 0 20px 40px rgba(0,0,0,0.1);
+  }
+
+  .mercury-capsule {
+    @apply bg-gradient-to-br from-indigo-400 via-indigo-600 to-indigo-900 shadow-[0_0_25px_rgba(79,70,229,0.5)] relative overflow-hidden rounded-[24px];
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -4px 12px rgba(0,0,0,0.3), 0 0 20px rgba(79,70,229,0.4);
+  }
+
+  .mercury-capsule::after {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/40 to-transparent;
+  }
+
+  .acrylic-slab {
+    @apply bg-gradient-to-b from-indigo-950 to-black relative overflow-hidden border border-white/20 rounded-[24px];
+    box-shadow: inset 0 2px 10px rgba(255,255,255,0.4), 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .etched-well {
+    @apply bg-black/5 backdrop-blur-md rounded-[16px] border border-white/10;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .tech-label {
+    @apply font-mono font-bold text-[9px] uppercase tracking-[0.25em] text-indigo-600;
+  }
+
+  .hud-data {
+    @apply font-mono font-extrabold tracking-tight text-slate-950;
+  }
+
+  .led-indigo {
+    @apply w-1 h-1 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(79,70,229,1)];
+  }
+
+  .led-red {
+    @apply w-1 h-1 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,1)];
   }
 }
 

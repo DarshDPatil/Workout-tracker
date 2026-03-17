@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, GripVertical } from 'lucide-react';
-import { WorkoutExercise, WorkoutSet } from '../types';
+import { Search, GripVertical, Activity } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { WorkoutExercise, WorkoutSet, UserProfile, WorkoutSession } from '../types';
 import { storageService } from '../services/storage';
 import { DndContext, DragEndEvent, DragStartEvent, useDroppable, DragOverlay, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
 import ActiveWorkoutArea from '../components/ActiveWorkoutArea';
 import WorkoutBuilderMenu from '../components/WorkoutBuilderMenu';
 import SidebarExerciseList from '../components/SidebarExerciseList';
+import StatsBar from '../components/StatsBar';
 
 // --- TEACHER REQUIREMENT: EXERCISE VIDEO DATABASE ---
 const exerciseGuides: Record<string, { name: string; videoUrl: string; steps: string[] }> = {
@@ -83,6 +85,13 @@ export default function Workout() {
   const [saving, setSaving] = useState(false);
   const [activeDragItem, setActiveDragItem] = useState<any>(null);
   const [workoutName, setWorkoutName] = useState(selectedMuscleGroup ? `${selectedMuscleGroup} Workout` : 'Active Workout');
+  const [profile, setProfile] = useState<UserProfile>(storageService.getUserProfile());
+  const [history, setHistory] = useState<WorkoutSession[]>(storageService.getHistory());
+
+  useEffect(() => {
+    setProfile(storageService.getUserProfile());
+    setHistory(storageService.getHistory());
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -178,7 +187,7 @@ export default function Workout() {
         userId: 'local-user',
         name: workoutName,
         date: new Date().toISOString(),
-        muscleGroups: Array.from(new Set(activeExercises.map(ex => ex.muscleGroup))),
+        muscleGroups: Array.from(new Set(activeExercises.map(ex => ex.muscleGroup).filter(Boolean))) as string[],
         exercises: activeExercises
       });
       navigate('/history');
@@ -196,8 +205,8 @@ export default function Workout() {
       onDragStart={handleDragStart} 
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
-        <div className="w-1/3 border-r border-black p-8 overflow-y-auto custom-scrollbar">
+      <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-transparent m-4 gap-4">
+        <div className="w-[380px] p-6 overflow-y-auto custom-scrollbar glass-liquid relative">
           <WorkoutBuilderMenu 
             selectedMuscleGroup={selectedMuscleGroup}
             setSelectedMuscleGroup={handleMuscleSelect}
@@ -206,12 +215,12 @@ export default function Workout() {
           <div className="mt-8">
             {selectedMuscleGroup && (
             <>
-              <div className="relative mb-6">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <div className="relative mb-6 group etched-well px-4">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-600/40 group-focus-within:text-indigo-600 transition-colors" size={16} />
                 <input 
                   type="text" 
-                  placeholder={`Search ${selectedMuscleGroup} exercises...`}
-                  className="w-full pl-12 pr-6 py-4 bg-gray-50 rounded-2xl border border-gray-100 focus:outline-none"
+                  placeholder={`SEARCH ${selectedMuscleGroup.toUpperCase()} PROTOCOLS...`}
+                  className="w-full pl-8 pr-4 py-3.5 bg-transparent focus:outline-none transition-all placeholder:text-slate-400 font-extrabold text-slate-950 text-[10px] tracking-[0.1em] uppercase font-mono"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -222,94 +231,93 @@ export default function Workout() {
                 onAddExercise={addExercise}
                 searchQuery={searchQuery}
               />
-
-              {/* THE RADAR CHART IS GONE! THE VIDEO PLAYER IS NOW HERE */}
-              {exerciseGuides[selectedMuscleGroup.toLowerCase()] && (
-                <div className="mt-12 bg-black rounded-[20px] p-6 text-white shadow-xl">
-                  <h3 className="text-[12px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 text-white">
-                    <span className="text-xl">📺</span> Form Guide: {exerciseGuides[selectedMuscleGroup.toLowerCase()].name}
-                  </h3>
-                  
-                  <div className="w-full aspect-video rounded-xl overflow-hidden border border-gray-800 mb-6 bg-gray-900">
-                    <iframe 
-                      className="w-full h-full"
-                      src={exerciseGuides[selectedMuscleGroup.toLowerCase()].videoUrl} 
-                      title={exerciseGuides[selectedMuscleGroup.toLowerCase()].name}
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-
-                  <div className="space-y-3">
-                    <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">Step-by-Step</p>
-                    <ol className="list-decimal list-inside text-sm text-gray-200 space-y-2 font-medium">
-                      {exerciseGuides[selectedMuscleGroup.toLowerCase()].steps.map((step, index) => (
-                        <li key={index} className="leading-relaxed pl-1">{step}</li>
-                      ))}
-                    </ol>
-                  </div>
-                </div>
-              )}
             </>
           )}
 
           {!selectedMuscleGroup && (
-            <div className="flex-1 flex items-center justify-center text-center p-8 bg-black/5 rounded-[20px] border-2 border-dashed border-gray-200 mt-8">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                Select a muscle group to view exercises
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-10 glass-liquid-terminal border-2 border-dashed border-black/5 mt-8">
+              <div className="w-10 h-10 rounded-[14px] border border-black/5 flex items-center justify-center mb-4">
+                <Search size={18} className="text-slate-300" />
+              </div>
+              <p className="tech-label opacity-40">
+                Awaiting Target Uplink
               </p>
             </div>
           )}
         </div>
       </div>
 
-        <div className="flex-1 relative">
-          {selectedMuscleGroup ? (
-            <ActiveWorkoutArea 
-              currentMuscleGroup={selectedMuscleGroup}
-              activeExercises={activeExercises}
-              workoutName={workoutName}
-              setWorkoutName={setWorkoutName}
-              onAddExercise={addExercise}
-              onRemoveExercise={removeExercise}
-              onUpdateSet={updateSet}
-              onToggleComplete={toggleComplete}
-              onAddSet={addSet}
-              onRemoveSet={removeSet}
-              onFinish={handleFinish}
-              saving={saving}
-              isOver={isOver}
-              dropRef={setDropRef}
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center p-12">
-              <div className="max-w-md text-center space-y-6">
-                <div className="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mx-auto border border-gray-100">
-                  <span className="text-4xl">⚠️</span>
+        <div className="flex-1 relative h-full">
+          <AnimatePresence mode="wait">
+            {selectedMuscleGroup ? (
+              <motion.div 
+                key={selectedMuscleGroup}
+                initial={{ opacity: 0, scale: 0.98, y: 20, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.98, y: -20, filter: 'blur(10px)' }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="h-full flex flex-col"
+              >
+                <div className="mb-4">
+                  <StatsBar profile={profile} history={history} />
                 </div>
-                <h3 className="text-2xl font-black uppercase tracking-tight">Workout Page</h3>
-                <p className="text-gray-500 font-medium">
-                  Select a muscle group from the sidebar to start logging exercises.
-                </p>
-                <div className="pt-4">
-                  <div className="inline-block px-6 py-2 bg-black/5 rounded-full text-[10px] font-black text-black/40 uppercase tracking-widest">
-                    Awaiting Selection
+                <div className="flex-1 overflow-hidden">
+                  <ActiveWorkoutArea 
+                    currentMuscleGroup={selectedMuscleGroup}
+                    activeExercises={activeExercises}
+                    workoutName={workoutName}
+                    setWorkoutName={setWorkoutName}
+                    onAddExercise={addExercise}
+                    onRemoveExercise={removeExercise}
+                    onUpdateSet={updateSet}
+                    onToggleComplete={toggleComplete}
+                    onAddSet={addSet}
+                    onRemoveSet={removeSet}
+                    onFinish={handleFinish}
+                    saving={saving}
+                    isOver={isOver}
+                    dropRef={setDropRef}
+                  />
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="standby"
+                initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="absolute inset-0 flex items-center justify-center p-12 glass-liquid-terminal m-4"
+              >
+                <div className="max-w-md text-center space-y-6">
+                  <div className="w-20 h-20 bg-white/5 backdrop-blur-xl rounded-[32px] shadow-2xl flex items-center justify-center mx-auto border border-white/20 ring-1 ring-inset ring-white/20">
+                    <Activity className="text-indigo-600" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-black uppercase tracking-tight text-slate-950">Terminal Standby</h3>
+                  <p className="text-slate-500 font-medium">
+                    Select a muscle group from the sidebar to initialize the workout protocol.
+                  </p>
+                  <div className="pt-4">
+                    <div className="inline-block px-6 py-2 bg-indigo-600/10 rounded-full text-[10px] font-black text-indigo-600 uppercase tracking-widest border border-indigo-600/20">
+                      Awaiting Selection
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       <DragOverlay>
         {activeDragItem ? (
-          <div className="bg-white p-4 rounded-2xl border border-black shadow-2xl flex items-center justify-between w-[300px] opacity-90">
+          <div className="glass-liquid-terminal p-4 flex items-center justify-between w-[300px] opacity-90 scale-105 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
-                <GripVertical className="text-white/50" size={14} />
+              <div className="w-10 h-10 bg-indigo-600/10 rounded-[12px] flex items-center justify-center border border-indigo-500/20">
+                <GripVertical className="text-indigo-600" size={14} />
               </div>
               <div>
-                <p className="font-bold text-sm">{activeDragItem.name}</p>
-                <p className="text-[10px] text-gray-400">{activeDragItem.type} movement</p>
+                <p className="font-black text-sm text-slate-950 uppercase tracking-tight">{activeDragItem.name}</p>
+                <p className="tech-label opacity-60">{activeDragItem.type} Protocol</p>
               </div>
             </div>
           </div>

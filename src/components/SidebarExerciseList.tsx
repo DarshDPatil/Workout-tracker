@@ -1,60 +1,72 @@
 import React from 'react';
-import { Plus, GripVertical } from 'lucide-react';
+import { Plus, GripVertical, Activity } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
+import { motion } from 'motion/react';
 import { exerciseDatabase } from '../constants/exerciseDatabase';
 
 interface Exercise {
   id: string;
   name: string;
   type: string;
+  muscleGroup?: string | null;
 }
 
 interface DraggableExerciseCardProps {
   exercise: Exercise;
   onAdd: (exercise: Exercise) => void;
+  index: number;
 }
 
-const DraggableExerciseCard: React.FC<DraggableExerciseCardProps> = ({ exercise, onAdd }) => {
+const DraggableExerciseCard: React.FC<DraggableExerciseCardProps> = ({ exercise, onAdd, index }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `sidebar-${exercise.id}`,
-    data: exercise,
+    data: { ...exercise, muscleGroup: exercise.muscleGroup },
   });
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 400, 
+        damping: 28,
+        delay: index * 0.05 
+      }}
       ref={setNodeRef}
-      className={`bg-white p-4 rounded-[20px] border border-gray-100 shadow-sm flex items-center justify-between group hover:border-black transition-all duration-200 ${
+      className={`flex items-center gap-4 p-4 bg-white/10 backdrop-blur-[40px] border border-white/20 rounded-[28px] shadow-xl hover:bg-white/20 transition-all group relative overflow-hidden ${
         isDragging ? 'opacity-50' : ''
       }`}
+      style={{
+        boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.4), 0 10px 20px rgba(0,0,0,0.1)'
+      }}
     >
-      <div className="flex items-center gap-4">
-        {/* Dark square icon with grip */}
-        <div 
-          {...attributes}
-          {...listeners}
-          className="w-10 h-10 bg-black rounded-xl flex items-center justify-center shrink-0 cursor-grab active:cursor-grabbing"
-        >
-          <GripVertical className="text-white/40" size={16} />
-        </div>
-        
-        <div className="flex flex-col">
-          <span className="text-sm font-bold text-black leading-tight">
-            {exercise.name}
-          </span>
-          <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide mt-0.5">
-            {exercise.type}
-          </span>
-        </div>
+      {/* Refractive Glass Tile Icon */}
+      <div 
+        {...attributes}
+        {...listeners}
+        className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-[18px] flex items-center justify-center shrink-0 cursor-grab active:cursor-grabbing shadow-inner group-hover:border-white/40 transition-all"
+      >
+        <Activity className="text-indigo-600/60 group-hover:text-indigo-600 transition-colors" size={18} />
+      </div>
+      
+      <div className="flex flex-col flex-1 min-w-0">
+        <span className="text-sm font-bold text-slate-950 tracking-tight truncate">
+          {exercise.name}
+        </span>
+        <span className="font-mono text-indigo-600 font-black uppercase text-[9px] tracking-[0.1em] mt-0.5">
+          {exercise.type}
+        </span>
       </div>
 
       <button
         onClick={() => onAdd(exercise)}
-        className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shrink-0"
+        className="w-10 h-6 rounded-[12px] bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-500/40 hover:shadow-[0_0_15px_rgba(79,70,229,0.4)] transition-all shrink-0"
         aria-label={`Add ${exercise.name}`}
       >
-        <Plus size={16} />
+        <Plus size={14} strokeWidth={3} />
       </button>
-    </div>
+    </motion.div>
   );
 };
 
@@ -64,10 +76,6 @@ interface SidebarExerciseListProps {
   searchQuery?: string;
 }
 
-/**
- * SidebarExerciseList Component
- * Displays a list of exercises for a selected muscle group with search support.
- */
 const SidebarExerciseList: React.FC<SidebarExerciseListProps> = ({
   selectedMuscleGroup,
   onAddExercise,
@@ -83,8 +91,8 @@ const SidebarExerciseList: React.FC<SidebarExerciseListProps> = ({
 
   if (filteredExercises.length === 0) {
     return (
-      <div className="p-8 text-center bg-gray-50 rounded-[20px] border-2 border-dashed border-gray-100">
-        <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">
+      <div className="p-8 text-center bg-white/5 backdrop-blur-md rounded-[24px] border border-dashed border-black/5">
+        <p className="tech-label opacity-40">
           {searchQuery ? 'No matches found' : `No exercises for ${selectedMuscleGroup}`}
         </p>
       </div>
@@ -93,10 +101,11 @@ const SidebarExerciseList: React.FC<SidebarExerciseListProps> = ({
 
   return (
     <div className="space-y-3 pb-8">
-      {filteredExercises.map((exercise) => (
+      {filteredExercises.map((exercise, idx) => (
         <DraggableExerciseCard 
           key={exercise.id} 
-          exercise={exercise} 
+          exercise={{ ...exercise, muscleGroup: selectedMuscleGroup }} 
+          index={idx}
           onAdd={(ex) => onAddExercise({ ...ex, muscleGroup: selectedMuscleGroup })} 
         />
       ))}
