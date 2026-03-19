@@ -8,7 +8,6 @@ import { DndContext, DragEndEvent, DragStartEvent, useDroppable, DragOverlay, Po
 import ActiveWorkoutArea from '../components/ActiveWorkoutArea';
 import WorkoutBuilderMenu from '../components/WorkoutBuilderMenu';
 import SidebarExerciseList from '../components/SidebarExerciseList';
-import StatsBar from '../components/StatsBar';
 
 // --- TEACHER REQUIREMENT: EXERCISE VIDEO DATABASE ---
 const exerciseGuides: Record<string, { name: string; videoUrl: string; steps: string[] }> = {
@@ -220,7 +219,7 @@ export default function Workout() {
                 <input 
                   type="text" 
                   placeholder={`SEARCH ${selectedMuscleGroup.toUpperCase()} PROTOCOLS...`}
-                  className="w-full pl-8 pr-4 py-3.5 bg-transparent focus:outline-none transition-all placeholder:text-slate-400 font-extrabold text-slate-950 text-[10px] tracking-[0.1em] uppercase font-mono"
+                  className="w-full pl-8 pr-4 py-3.5 bg-transparent focus:outline-none transition-all placeholder:text-slate-400 font-extrabold text-slate-950 dark:text-white text-[10px] tracking-[0.1em] uppercase font-mono"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -258,9 +257,6 @@ export default function Workout() {
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 className="h-full flex flex-col"
               >
-                <div className="mb-4">
-                  <StatsBar profile={profile} history={history} />
-                </div>
                 <div className="flex-1 overflow-hidden">
                   <ActiveWorkoutArea 
                     currentMuscleGroup={selectedMuscleGroup}
@@ -293,8 +289,8 @@ export default function Workout() {
                   <div className="w-20 h-20 bg-white/5 backdrop-blur-xl rounded-[32px] shadow-2xl flex items-center justify-center mx-auto border border-white/20 ring-1 ring-inset ring-white/20">
                     <Activity className="text-indigo-600" size={32} />
                   </div>
-                  <h3 className="text-2xl font-black uppercase tracking-tight text-slate-950">Terminal Standby</h3>
-                  <p className="text-slate-500 font-medium">
+                  <h3 className="text-2xl font-black uppercase tracking-tight text-slate-950 dark:text-white">Terminal Standby</h3>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">
                     Select a muscle group from the sidebar to initialize the workout protocol.
                   </p>
                   <div className="pt-4">
@@ -316,7 +312,7 @@ export default function Workout() {
                 <GripVertical className="text-indigo-600" size={14} />
               </div>
               <div>
-                <p className="font-black text-sm text-slate-950 uppercase tracking-tight">{activeDragItem.name}</p>
+                <p className="font-black text-sm text-slate-950 dark:text-white uppercase tracking-tight">{activeDragItem.name}</p>
                 <p className="tech-label opacity-60">{activeDragItem.type} Protocol</p>
               </div>
             </div>

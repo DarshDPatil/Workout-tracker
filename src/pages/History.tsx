@@ -65,7 +65,7 @@ export default function History() {
   return (
     <div className="max-w-7xl mx-auto px-8 py-12">
       <div className="mb-12">
-        <h1 className="text-5xl font-black mb-1 tracking-tighter text-slate-950">WORKOUT HISTORY</h1>
+        <h1 className="text-5xl font-black mb-1 tracking-tighter text-slate-950 dark:text-white">WORKOUT HISTORY</h1>
         <p className="text-[10px] font-bold text-indigo-500/60 uppercase tracking-[0.2em]">Historical Data Logs</p>
       </div>
 
@@ -111,7 +111,7 @@ export default function History() {
                     <Calendar size={18} className="text-indigo-600" />
                   </div>
                   <div className="text-left">
-                    <p className="text-lg font-black tracking-tight text-slate-950 uppercase">
+                    <p className="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">
                       {session.name || session.muscleGroups.join(' + ')}
                     </p>
                     <p className="tech-label opacity-60">
@@ -137,7 +137,7 @@ export default function History() {
                       {session.exercises.map((ex, idx) => (
                         <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 etched-well">
                           <div>
-                            <h4 className="font-black text-sm text-slate-950 uppercase tracking-tight">{ex.name}</h4>
+                            <h4 className="font-black text-sm text-slate-950 dark:text-white uppercase tracking-tight">{ex.name}</h4>
                             <p className="tech-label opacity-60 mt-1">{ex.type} Protocol</p>
                           </div>
                           <div className="flex flex-wrap gap-2">

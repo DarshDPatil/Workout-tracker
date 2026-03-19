@@ -88,7 +88,7 @@ export default function Progress() {
           
           {/* Volume Radar Chart */}
           <div className="glass-liquid-terminal p-8 flex flex-col">
-            <h2 className="text-3xl font-black mb-8 text-slate-950 uppercase tracking-tighter">Volume</h2>
+            <h2 className="text-3xl font-black mb-8 text-slate-950 dark:text-white uppercase tracking-tighter">Volume</h2>
             <div className="h-[400px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={volumeData}>
@@ -108,7 +108,7 @@ export default function Progress() {
 
           {/* Personal Records */}
           <div className="glass-liquid-terminal p-8">
-            <h2 className="text-2xl font-black mb-6 text-slate-950 uppercase tracking-tighter">Personal Records</h2>
+            <h2 className="text-2xl font-black mb-6 text-slate-950 dark:text-white uppercase tracking-tighter">Personal Records</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 { label: 'Squat', key: 'squat', icon: <Dumbbell size={16} /> },
@@ -153,7 +153,7 @@ export default function Progress() {
           {/* Weight Graph (NOW MOVED UP INSIDE MAIN COLUMN) */}
           <div className="glass-liquid-terminal p-0 overflow-hidden flex min-h-[300px]">
             <div className="w-40 bg-white/5 backdrop-blur-md flex flex-col items-center justify-center border-r border-white/10 p-8 relative">
-              <h3 className="text-2xl font-black text-center leading-tight text-slate-950 uppercase tracking-tighter">Weight Graph</h3>
+              <h3 className="text-2xl font-black text-center leading-tight text-slate-950 dark:text-white uppercase tracking-tighter">Weight Graph</h3>
               {weightTrend && !weightTrend.isNeutral && (
                 <div className={`mt-4 flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full ${weightTrend.isIncrease ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30' : 'bg-red-500/20 text-red-600 border border-red-500/30'}`}>
                   {weightTrend.isIncrease ? <ArrowUp size={10} strokeWidth={3} /> : <ArrowDown size={10} strokeWidth={3} />}
@@ -219,7 +219,7 @@ export default function Progress() {
         <div className="space-y-8">
           <div className="glass-liquid-terminal p-8">
             <div className="flex justify-between items-start mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight text-slate-950">Body Weight</h2>
+              <h2 className="text-lg font-black uppercase tracking-tight text-slate-950 dark:text-white">Body Weight</h2>
               {weightTrend && !weightTrend.isNeutral && (
                 <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${weightTrend.isIncrease ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30' : 'bg-red-500/20 text-red-600 border border-red-500/30'}`}>
                   {weightTrend.isIncrease ? <ArrowUp size={10} strokeWidth={3} /> : <ArrowDown size={10} strokeWidth={3} />}

@@ -77,7 +77,7 @@ const TacticalCalendar = ({ activeFilter }: { activeFilter: string | null }) => 
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-7 gap-2 mb-2">
             {daysOfWeek.map((day, i) => (
-              <div key={`header-${i}`} className="text-center text-[10px] font-mono font-bold text-slate-500/70">{day}</div>
+              <div key={`header-${i}`} className="text-center text-[10px] font-mono font-bold text-slate-500/70 dark:text-slate-400">{day}</div>
             ))}
           </div>
 
@@ -99,7 +99,7 @@ const TacticalCalendar = ({ activeFilter }: { activeFilter: string | null }) => 
                 // Replaced onDoubleClick with onClick
                 <div key={item.id} className="relative group" onClick={() => handleLaunchProtocol(item)}>
                   <div className={squareClass}>
-                    <span className={`text-[10px] font-mono font-bold ${item.status === 'empty' ? 'text-slate-500/40' : 'text-white/90'}`}>{item.day}</span>
+                    <span className={`text-[10px] font-mono font-bold ${item.status === 'empty' ? 'text-slate-500/40 dark:text-slate-500' : 'text-white/90'}`}>{item.day}</span>
                   </div>
                   
                   {/* Kept the hover tooltip so users know what they are about to click */}
@@ -119,14 +119,14 @@ const TacticalCalendar = ({ activeFilter }: { activeFilter: string | null }) => 
       {confirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-black text-slate-900 mb-2 uppercase tracking-tight">Launch Protocol</h3>
-            <p className="text-sm text-slate-500 mb-6">
+            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight">Launch Protocol</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
               Launch details for: <span className="font-bold text-indigo-600">{confirmModal.data.title}</span>?
             </p>
             <div className="flex gap-3 justify-end">
               <button 
                 onClick={() => setConfirmModal(null)} 
-                className="px-4 py-2 rounded-lg text-xs font-bold font-mono text-slate-500 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-bold font-mono text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 CANCEL
               </button>

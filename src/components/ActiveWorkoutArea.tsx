@@ -73,17 +73,17 @@ const ActiveWorkoutArea: React.FC<ActiveWorkoutAreaProps> = ({
       className={`flex-1 h-full p-6 overflow-y-auto transition-colors custom-scrollbar ${isOver ? 'bg-gray-50' : 'bg-transparent'}`}
     >
       {/* Workout Header & Name Input */}
-      <div className="flex flex-row justify-between items-center w-full mb-8 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+      <div className="flex flex-row justify-between items-center w-full mb-8 glass-liquid-terminal p-6">
         <div className="space-y-1 pr-8 flex-1">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Session</span>
+            <span className="text-xs font-bold text-gray-400 dark:text-gray-300 uppercase tracking-widest">Active Session</span>
           </div>
           <input
             type="text"
             value={workoutName}
             onChange={(e) => setWorkoutName(e.target.value)}
-            className="text-3xl font-black uppercase bg-transparent border-b-2 border-transparent focus:border-gray-200 focus:outline-none w-full transition-colors text-black tracking-tight"
+            className="text-3xl font-black uppercase bg-transparent border-b-2 border-transparent focus:border-gray-200 focus:outline-none w-full transition-colors text-black dark:text-white tracking-tight"
             placeholder="Workout Name"
           />
         </div>
@@ -126,26 +126,26 @@ const ActiveWorkoutArea: React.FC<ActiveWorkoutAreaProps> = ({
           {!isAddingCustom ? (
             <div 
               onClick={() => setIsAddingCustom(true)}
-              className="h-32 border-2 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-gray-300 group"
+              className="h-32 border-2 border-dashed border-black/10 rounded-[32px] flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer glass-liquid hover:bg-white/40 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                <Plus size={20} className="text-gray-400 group-hover:text-black transition-colors" />
+              <div className="w-10 h-10 rounded-xl bg-white/50 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <Plus size={20} className="text-slate-400 group-hover:text-indigo-600 transition-colors" />
               </div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Add Custom Exercise</p>
+              <p className="tech-label opacity-60 group-hover:opacity-100">Add Custom Exercise</p>
             </div>
           ) : (
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100"
+              className="glass-liquid-terminal p-6"
             >
-              <h3 className="text-lg font-black mb-4 uppercase tracking-tight text-black">Custom Exercise</h3>
-              <div className="bg-gray-50 rounded-2xl px-6 mb-6 border border-gray-100">
+              <h3 className="text-lg font-black mb-4 uppercase tracking-tight text-slate-950 dark:text-white">Custom Exercise</h3>
+              <div className="etched-well px-6 mb-6">
                 <input 
                   type="text"
                   autoFocus
                   placeholder={`Name your ${currentMuscleGroup || 'workout'} exercise...`}
-                  className="w-full py-4 bg-transparent focus:outline-none text-base font-bold text-black placeholder:text-gray-400"
+                  className="w-full py-4 bg-transparent focus:outline-none text-base font-bold text-slate-950 dark:text-white placeholder:text-slate-400"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddCustom()}
@@ -154,7 +154,7 @@ const ActiveWorkoutArea: React.FC<ActiveWorkoutAreaProps> = ({
               <div className="flex gap-4">
                 <button 
                   onClick={handleAddCustom}
-                  className="flex-1 bg-black text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-800 transition-colors text-xs shadow-lg shadow-black/20"
+                  className="flex-1 mercury-capsule text-white py-4 rounded-[16px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all text-[10px] shadow-lg"
                 >
                   Add Exercise
                 </button>
@@ -163,7 +163,7 @@ const ActiveWorkoutArea: React.FC<ActiveWorkoutAreaProps> = ({
                     setIsAddingCustom(false);
                     setCustomName('');
                   }}
-                  className="flex-1 bg-gray-100 text-gray-500 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-200 hover:text-black transition-colors text-xs"
+                  className="flex-1 bg-black/5 dark:bg-white/5 backdrop-blur-md text-slate-500 dark:text-slate-300 py-4 rounded-[16px] font-black uppercase tracking-widest hover:bg-black/10 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-all text-[10px]"
                 >
                   Cancel
                 </button>

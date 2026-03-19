@@ -35,7 +35,7 @@ const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       {/* Header / HUD Title */}
       <div className="p-5 flex justify-between items-center border-b border-black/5 relative overflow-hidden">
         <div className="space-y-0.5">
-          <h3 className="text-xl font-black tracking-tighter text-slate-950 flex items-center gap-3 uppercase">
+          <h3 className="text-xl font-black tracking-tighter text-slate-950 dark:text-white flex items-center gap-3 uppercase">
             {exercise.name}
           </h3>
           <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   value={set.weight}
                   onChange={(e) => onUpdateSet(exercise.id, idx, 'weight', e.target.value)}
                   placeholder="000.0"
-                  className="w-full bg-transparent text-center font-mono font-extrabold text-sm py-2 focus:outline-none placeholder:text-slate-300 text-slate-950"
+                  className="w-full bg-transparent text-center font-mono font-extrabold text-sm py-2 focus:outline-none placeholder:text-slate-300 text-slate-950 dark:text-white"
                 />
               </div>
 
@@ -115,7 +115,7 @@ const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   value={set.reps}
                   onChange={(e) => onUpdateSet(exercise.id, idx, 'reps', e.target.value)}
                   placeholder="00"
-                  className="w-full bg-transparent text-center font-mono font-extrabold text-sm py-2 focus:outline-none placeholder:text-slate-300 text-slate-950"
+                  className="w-full bg-transparent text-center font-mono font-extrabold text-sm py-2 focus:outline-none placeholder:text-slate-300 text-slate-950 dark:text-white"
                 />
               </div>
 

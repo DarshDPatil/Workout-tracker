@@ -69,7 +69,7 @@ const TacticalCalendar = ({ activeFilter }) => {
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-7 gap-2 mb-2">
             {daysOfWeek.map((day, i) => (
-              <div key={`header-${i}`} className="text-center text-[10px] font-mono font-bold text-slate-500/70">{day}</div>
+              <div key={`header-${i}`} className="text-center text-[10px] font-mono font-bold text-slate-500/70 dark:text-slate-400">{day}</div>
             ))}
           </div>
 
@@ -92,7 +92,7 @@ const TacticalCalendar = ({ activeFilter }) => {
               return (
                 <div key={item.id} className="relative group" onClick={() => handleSquareClick(item)}>
                   <div className={squareClass}>
-                    <span className={`text-[10px] font-mono font-bold ${item.status === 'empty' ? 'text-slate-500/40' : 'text-white/90'}`}>{item.day}</span>
+                    <span className={`text-[10px] font-mono font-bold ${item.status === 'empty' ? 'text-slate-500/40 dark:text-slate-500' : 'text-white/90'}`}>{item.day}</span>
                   </div>
                 </div>
               );
@@ -109,14 +109,14 @@ const TacticalCalendar = ({ activeFilter }) => {
                <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             </div>
             <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
                 {selectedSession.data.title}
                 {selectedSession.data.pr && <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-sm uppercase tracking-widest align-middle">PR Hit</span>}
               </h2>
               <p className="text-xs font-mono font-bold text-indigo-500 uppercase tracking-widest mt-1">DAY {selectedSession.day} • {selectedSession.data.volume}</p>
             </div>
           </div>
-          <button className="px-6 py-3 bg-white/20 border border-white/40 rounded-full text-xs font-mono font-bold text-slate-800 hover:bg-white/40 transition-colors shadow-[inset_0_1px_2px_rgba(255,255,255,0.8)]">
+          <button className="px-6 py-3 bg-white/20 dark:bg-white/10 border border-white/40 dark:border-white/20 rounded-full text-xs font-mono font-bold text-slate-800 dark:text-white hover:bg-white/40 dark:hover:bg-white/20 transition-colors shadow-[inset_0_1px_2px_rgba(255,255,255,0.8)] dark:shadow-none">
             VIEW PROTOCOL →
           </button>
         </div>

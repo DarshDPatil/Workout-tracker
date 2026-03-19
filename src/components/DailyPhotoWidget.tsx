@@ -6,6 +6,7 @@ const DailyPhotoWidget = () => {
   
   // --- WEBCAM STATES ---
   const [isWebcamOpen, setIsWebcamOpen] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -32,21 +33,25 @@ const DailyPhotoWidget = () => {
 
   // --- WEBCAM LOGIC ---
   const startWebcam = async () => {
+    setCameraError(null);
     setIsWebcamOpen(true);
-    try {
-      // Ask the browser for video permission
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "user" } // 'user' prefers webcam, 'environment' prefers rear camera
-      });
-      // Attach the live stream to our video element
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+    
+    // Small delay to ensure the video element is rendered before attaching the stream
+    setTimeout(async () => {
+      try {
+        // Ask the browser for video permission
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: "user" } // 'user' prefers webcam, 'environment' prefers rear camera
+        });
+        // Attach the live stream to our video element
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (err: any) {
+        console.warn("Camera access denied or unavailable:", err);
+        setCameraError(err.message || "Permission dismissed");
       }
-    } catch (err) {
-      console.error("Camera access denied or unavailable:", err);
-      alert("Please allow camera permissions in your browser.");
-      setIsWebcamOpen(false);
-    }
+    }, 50);
   };
 
   const stopWebcam = () => {
@@ -56,6 +61,7 @@ const DailyPhotoWidget = () => {
       tracks.forEach(track => track.stop()); // Turn off the camera light
     }
     setIsWebcamOpen(false);
+    setCameraError(null);
   };
 
   const capturePhoto = () => {
@@ -92,7 +98,7 @@ const DailyPhotoWidget = () => {
       
       {/* Header & Controls */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-black uppercase text-slate-950 tracking-tight">
+        <h2 className="text-lg font-black uppercase text-slate-950 dark:text-white tracking-tight">
           Today's Pic
         </h2>
         <div className="flex gap-2">
@@ -144,30 +150,40 @@ const DailyPhotoWidget = () => {
             <X size={24} />
           </button>
 
-          {/* Live Video Feed */}
-          <div className="w-full max-w-md aspect-square rounded-[32px] overflow-hidden bg-black mb-6 relative shadow-[0_0_40px_rgba(79,70,229,0.2)] border border-white/10">
-            <video 
-              ref={videoRef} 
-              autoPlay 
-              playsInline 
-              className="w-full h-full object-cover transform scale-x-[-1]" // Mirrors the video so it feels like a mirror
-            />
-            {/* Tactical Crosshair Overlay */}
-            <div className="absolute inset-0 pointer-events-none border-[1px] border-white/20 m-8 rounded-2xl flex items-center justify-center">
-                <div className="w-8 h-8 border border-white/30 rounded-full flex items-center justify-center">
-                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
-                </div>
+          {cameraError ? (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-6 rounded-2xl max-w-md w-full text-center">
+              <p className="font-bold mb-2">Camera Access Denied</p>
+              <p className="text-sm opacity-80">{cameraError}</p>
+              <p className="text-xs opacity-60 mt-4">Please enable camera permissions in your browser settings and try again.</p>
             </div>
-          </div>
+          ) : (
+            <>
+              {/* Live Video Feed */}
+              <div className="w-full max-w-md aspect-square rounded-[32px] overflow-hidden bg-black mb-6 relative shadow-[0_0_40px_rgba(79,70,229,0.2)] border border-white/10">
+                <video 
+                  ref={videoRef} 
+                  autoPlay 
+                  playsInline 
+                  className="w-full h-full object-cover transform scale-x-[-1]" // Mirrors the video so it feels like a mirror
+                />
+                {/* Tactical Crosshair Overlay */}
+                <div className="absolute inset-0 pointer-events-none border-[1px] border-white/20 m-8 rounded-2xl flex items-center justify-center">
+                    <div className="w-8 h-8 border border-white/30 rounded-full flex items-center justify-center">
+                        <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+                    </div>
+                </div>
+              </div>
 
-          {/* Snap Photo Button */}
-          <button 
-            onClick={capturePhoto}
-            className="flex items-center gap-2 px-8 py-4 bg-white text-slate-950 rounded-full font-black uppercase text-sm tracking-widest hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-          >
-            <Aperture size={18} />
-            Capture Target
-          </button>
+              {/* Snap Photo Button */}
+              <button 
+                onClick={capturePhoto}
+                className="flex items-center gap-2 px-8 py-4 bg-white text-slate-950 dark:text-slate-900 rounded-full font-black uppercase text-sm tracking-widest hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+              >
+                <Aperture size={18} />
+                Capture Target
+              </button>
+            </>
+          )}
 
           {/* Hidden Canvas used to freeze the frame */}
           <canvas ref={canvasRef} className="hidden" />

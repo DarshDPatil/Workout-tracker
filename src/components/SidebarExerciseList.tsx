@@ -51,7 +51,7 @@ const DraggableExerciseCard: React.FC<DraggableExerciseCardProps> = ({ exercise,
       </div>
       
       <div className="flex flex-col flex-1 min-w-0">
-        <span className="text-sm font-bold text-slate-950 tracking-tight truncate">
+        <span className="text-sm font-bold text-slate-950 dark:text-white tracking-tight truncate">
           {exercise.name}
         </span>
         <span className="font-mono text-indigo-600 font-black uppercase text-[9px] tracking-[0.1em] mt-0.5">

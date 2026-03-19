@@ -39,7 +39,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, size = 300 }) => {
 
   return (
     <div className="flex flex-col items-center justify-center p-6 bg-white rounded-[32px] card-shadow border border-gray-100">
-      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-6">Volume Distribution</h4>
+      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-300 mb-6">Volume Distribution</h4>
       <svg width={size} height={size} className="overflow-visible">
         {/* Grid Background */}
         {gridPolygons.map((p, i) => (

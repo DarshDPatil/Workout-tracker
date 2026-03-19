@@ -71,7 +71,7 @@ export default function Home() {
           className="text-center mb-8 relative z-10"
         >
           <h1 className="text-5xl font-black mb-1 tracking-tighter">SELECT MUSCLE GROUP</h1>
-          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">Target specific anatomy to begin</p>
+          <p className="text-gray-400 dark:text-gray-300 text-xs font-bold uppercase tracking-widest mb-6">Target specific anatomy to begin</p>
 
           {/* XP / Leveling System */}
           <div className="max-w-md mx-auto w-full px-4">
@@ -81,7 +81,7 @@ export default function Home() {
                 <div className="w-1 h-1 bg-white/20 rounded-full" />
                 <span className="tech-label text-slate-400">Elite Athlete</span>
               </div>
-              <span className="hud-data text-[10px] text-slate-500">850 / 1000 XP</span>
+              <span className="hud-data text-[10px] text-slate-500 dark:text-slate-400">850 / 1000 XP</span>
             </div>
             <div className="h-1.5 w-full bg-black/20 rounded-[10px] overflow-hidden border border-white/10">
               <motion.div 

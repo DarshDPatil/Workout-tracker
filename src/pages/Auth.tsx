@@ -24,7 +24,7 @@ export default function Auth({ onLogin }: { onLogin: (user: any) => void }) {
       <div className="flex items-center gap-4 mb-8">
         <div className="w-16 h-16 bg-black rounded-2xl shadow-lg flex items-center justify-center">
            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-            <span className="text-black font-black text-xl">M</span>
+            <span className="text-black dark:text-white font-black text-xl">M</span>
            </div>
         </div>
         <h1 className="text-5xl font-black tracking-tighter momentum-logo">MOMENTUM</h1>
@@ -38,13 +38,13 @@ export default function Auth({ onLogin }: { onLogin: (user: any) => void }) {
         <div className="flex gap-4 mb-8">
           <button 
             onClick={() => setIsSignIn(true)}
-            className={`text-lg font-black tracking-tight pb-1 border-b-2 transition-colors ${isSignIn ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+            className={`text-lg font-black tracking-tight pb-1 border-b-2 transition-colors ${isSignIn ? 'border-black dark:border-white text-black dark:text-white' : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
           >
             SIGN IN
           </button>
           <button 
             onClick={() => setIsSignIn(false)}
-            className={`text-lg font-black tracking-tight pb-1 border-b-2 transition-colors ${!isSignIn ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+            className={`text-lg font-black tracking-tight pb-1 border-b-2 transition-colors ${!isSignIn ? 'border-black dark:border-white text-black dark:text-white' : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
           >
             SIGN UP
           </button>

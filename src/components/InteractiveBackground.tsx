@@ -42,7 +42,7 @@ export const InteractiveBackground: React.FC<InteractiveBackgroundProps> = ({ mo
         this.baseY = y;
       }
 
-      draw() {
+      draw(isDark: boolean) {
         let currentX = this.baseX;
         let currentY = this.baseY;
         let rippleIntensity = 0;
@@ -91,8 +91,8 @@ export const InteractiveBackground: React.FC<InteractiveBackgroundProps> = ({ mo
           ctx.arc(moveX, moveY, 2.8, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          ctx.fillStyle = '#000000';
-          ctx.globalAlpha = 0.14;
+          ctx.fillStyle = isDark ? '#ffffff' : '#000000';
+          ctx.globalAlpha = isDark ? 0.05 : 0.14;
           ctx.beginPath();
           ctx.arc(currentX, currentY, 1.5, 0, Math.PI * 2);
           ctx.fill();
@@ -115,6 +115,7 @@ export const InteractiveBackground: React.FC<InteractiveBackgroundProps> = ({ mo
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
+      const isDark = document.documentElement.classList.contains('dark');
 
       // Magnetic Snapping
       let target = { ...mouse.current };
@@ -170,7 +171,7 @@ export const InteractiveBackground: React.FC<InteractiveBackgroundProps> = ({ mo
         container.style.setProperty('--mouse-y', `${eased.current.y}px`);
       }
 
-      dots.forEach((dot) => dot.draw());
+      dots.forEach((dot) => dot.draw(isDark));
       animationFrameId = requestAnimationFrame(animate);
     };
 
@@ -191,7 +192,7 @@ export const InteractiveBackground: React.FC<InteractiveBackgroundProps> = ({ mo
   }, [mode]);
 
   return (
-    <div className="fixed inset-0 -z-10 bg-[#F8F9FD] overflow-hidden">
+    <div className="fixed inset-0 -z-10 bg-[#F1F3FF] dark:bg-black transition-colors duration-500 overflow-hidden">
       <canvas ref={canvasRef} className="block w-full h-full" />
       <div
         className="absolute inset-0 pointer-events-none opacity-50"

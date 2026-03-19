@@ -143,8 +143,8 @@ const StatsBar: React.FC<StatsBarProps> = ({ profile, history, variant = 'liquid
       <div className="flex flex-col items-center justify-center flex-1">
         <span className="font-mono font-bold text-indigo-600 uppercase text-xs tracking-widest mb-2">Daily Streak</span>
         <div className="flex items-baseline gap-1">
-          <span className="text-5xl text-slate-950 font-bold">{stats.streak}</span>
-          <span className="font-mono font-bold text-xs text-slate-500 uppercase translate-y-1">DAYS</span>
+          <span className="text-5xl text-slate-950 dark:text-white font-bold">{stats.streak}</span>
+          <span className="font-mono font-bold text-xs text-slate-500 dark:text-slate-400 uppercase translate-y-1">DAYS</span>
         </div>
       </div>
 
@@ -156,11 +156,11 @@ const StatsBar: React.FC<StatsBarProps> = ({ profile, history, variant = 'liquid
         <span className="font-mono font-bold text-indigo-600 uppercase text-xs tracking-widest mb-2">Weight Progress</span>
         <div className="flex items-center gap-3">
           <div className="flex items-baseline gap-1">
-            <span className="text-5xl text-slate-950 font-bold">
+            <span className="text-5xl text-slate-950 dark:text-white font-bold">
               {stats.weight.trend === 'up' ? '+' : stats.weight.trend === 'down' ? '-' : ''}
               {stats.weight.value}
             </span>
-            <span className="font-mono font-bold text-xs text-slate-500 uppercase translate-y-1">KG</span>
+            <span className="font-mono font-bold text-xs text-slate-500 dark:text-slate-400 uppercase translate-y-1">KG</span>
           </div>
           {stats.weight.trend !== 'neutral' && (
             <div className={`w-2.5 h-2.5 rounded-full ${stats.weight.trend === 'down' ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)]' : 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]'}`} />
@@ -175,8 +175,8 @@ const StatsBar: React.FC<StatsBarProps> = ({ profile, history, variant = 'liquid
       <div className="flex flex-col items-center justify-center flex-1">
         <span className="font-mono font-bold text-indigo-600 uppercase text-xs tracking-widest mb-2">Total Days</span>
         <div className="flex items-baseline gap-1">
-          <span className="text-5xl text-slate-950 font-bold">{stats.totalDays}</span>
-          <span className="font-mono font-bold text-xs text-slate-500 uppercase translate-y-1">SESSIONS</span>
+          <span className="text-5xl text-slate-950 dark:text-white font-bold">{stats.totalDays}</span>
+          <span className="font-mono font-bold text-xs text-slate-500 dark:text-slate-400 uppercase translate-y-1">SESSIONS</span>
         </div>
       </div>
     </motion.div>
