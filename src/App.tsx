@@ -10,8 +10,23 @@ import Auth from './pages/Auth';
 import { storageService } from './services/storage';
 import { InteractiveBackground } from './components/InteractiveBackground';
 import ThemeToggle from './components/ThemeToggle';
+import { auth, db } from './services/firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, getDocFromServer } from 'firebase/firestore';
 
-function Navbar({ onLogout }: { onLogout: () => void }) {
+async function testConnection() {
+  try {
+    await getDocFromServer(doc(db, 'test', 'connection'));
+  } catch (error) {
+    if(error instanceof Error && error.message.includes('the client is offline')) {
+      console.error("Please check your Firebase configuration.");
+    }
+  }
+}
+
+testConnection();
+
+function Navbar({ onLogout, userPhoto }: { onLogout: () => void, userPhoto?: string | null }) {
   const location = useLocation();
   const navItems = [
     { name: 'HOME', path: '/' },
@@ -54,8 +69,12 @@ function Navbar({ onLogout }: { onLogout: () => void }) {
         >
           <LogOut size={20} />
         </button>
-        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 overflow-hidden">
-          <img src="https://picsum.photos/seed/user/100/100" alt="Profile" referrerPolicy="no-referrer" />
+        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
+          {userPhoto ? (
+            <img src={userPhoto} alt="Profile" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+          ) : (
+            <UserIcon size={16} className="text-gray-400" />
+          )}
         </div>
       </div>
     </nav>
@@ -76,7 +95,7 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-function AppContent({ user, handleLogout, handleLogin }: { user: any, handleLogout: () => void, handleLogin: (data: any) => void }) {
+function AppContent({ user, handleLogout }: { user: any, handleLogout: () => void }) {
   const location = useLocation();
   const mode = location.pathname === '/' ? 'home' : 'standard';
 
@@ -85,7 +104,7 @@ function AppContent({ user, handleLogout, handleLogin }: { user: any, handleLogo
       <InteractiveBackground mode={mode} />
       {user ? (
         <>
-          <Navbar onLogout={handleLogout} />
+          <Navbar onLogout={handleLogout} userPhoto={user?.photoURL} />
           <main className="flex-1 relative z-10">
             <AnimatePresence mode="wait">
               <Routes location={location} key={location.pathname}>
@@ -103,7 +122,7 @@ function AppContent({ user, handleLogout, handleLogin }: { user: any, handleLogo
         <main className="flex-1 relative z-10">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-              <Route path="/auth" element={<PageWrapper><Auth onLogin={handleLogin} /></PageWrapper>} />
+              <Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
               <Route path="*" element={<Navigate to="/auth" />} />
             </Routes>
           </AnimatePresence>
@@ -118,19 +137,19 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = storageService.getAuthUser();
-    setUser(storedUser);
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    storageService.logout();
-    setUser(null);
-  };
-
-  const handleLogin = (userData: any) => {
-    storageService.setAuthUser(userData);
-    setUser(userData);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   if (loading) {
@@ -149,7 +168,7 @@ export default function App() {
 
   return (
     <Router>
-      <AppContent user={user} handleLogout={handleLogout} handleLogin={handleLogin} />
+      <AppContent user={user} handleLogout={handleLogout} />
     </Router>
   );
 }

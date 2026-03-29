@@ -15,18 +15,22 @@ export default function Progress() {
   const [currentWeightInput, setCurrentWeightInput] = useState<string>('');
 
   useEffect(() => {
-    const userProfile = storageService.getUserProfile();
-    setProfile(userProfile);
-    setSessions(storageService.getHistory());
-    setWeightHistory(userProfile.weightHistory || []);
-    setCurrentWeightInput(userProfile.currentWeight.toString());
+    const fetchData = async () => {
+      const userProfile = await storageService.getUserProfile();
+      setProfile(userProfile);
+      const history = await storageService.getHistory();
+      setSessions(history);
+      setWeightHistory(userProfile.weightHistory || []);
+      setCurrentWeightInput(userProfile.currentWeight.toString());
+    };
+    fetchData();
   }, []);
 
   const volumeData = useMemo(() => {
     return calculateVolumeData(sessions);
   }, [sessions]);
 
-  const handleWeightSubmit = () => {
+  const handleWeightSubmit = async () => {
     const weightNum = parseFloat(parseFloat(currentWeightInput).toFixed(2));
     if (isNaN(weightNum)) return;
 
@@ -50,7 +54,7 @@ export default function Progress() {
         weightHistory: newHistory 
       };
       setProfile(updatedProfile);
-      storageService.saveUserProfile(updatedProfile);
+      await storageService.saveUserProfile(updatedProfile);
       setCurrentWeightInput(weightNum.toFixed(2));
     }
   };
@@ -77,7 +81,11 @@ export default function Progress() {
     weight: h.weight
   }));
 
-  const setPrs = (newPrs: any) => setProfile({ ...profile, personalRecords: newPrs });
+  const setPrs = async (newPrs: any) => {
+    const updatedProfile = { ...profile, personalRecords: newPrs };
+    setProfile(updatedProfile);
+    await storageService.saveUserProfile(updatedProfile);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-12 space-y-8">

@@ -47,8 +47,8 @@ export default function Home() {
   const [activeModel, setActiveModel] = useState<'none' | 'front' | 'back'>('none');
 
   useEffect(() => {
-    setProfile(storageService.getUserProfile());
-    setHistory(storageService.getHistory());
+    storageService.getUserProfile().then(setProfile);
+    storageService.getHistory().then(setHistory);
 
     const handleLock = (e: any) => setActiveModel(e.detail.lockedModel);
     window.addEventListener('model-lock', handleLock);

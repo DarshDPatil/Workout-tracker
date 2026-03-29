@@ -1,0 +1,94 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User's profile, stats, and settings",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "dailyStreak": { "type": "number" },
+            "weightProgress": { "type": "number" },
+            "totalDays": { "type": "number" }
+          }
+        },
+        "personalRecords": {
+          "type": "object",
+          "properties": {
+            "squat": { "type": "number" },
+            "bench": { "type": "number" },
+            "deadlift": { "type": "number" }
+          }
+        },
+        "currentWeight": { "type": "number" },
+        "waterIntake": { "type": "number" },
+        "lastWaterLogDate": { "type": "string" },
+        "waterGoalMode": { "type": "string" },
+        "customWaterGoal": { "type": "number" },
+        "weightHistory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "string" },
+              "weight": { "type": "number" }
+            }
+          }
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "WorkoutSession": {
+      "title": "Workout Session",
+      "description": "A completed workout session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "title": { "type": "string" },
+        "volume": { "type": "number" },
+        "duration": { "type": "number" },
+        "muscleGroups": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "sets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "reps": { "type": "number" },
+                    "weight": { "type": "number" },
+                    "completed": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": ["date", "title", "exercises"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles and stats"
+    },
+    "/users/{userId}/workouts/{workoutId}": {
+      "schema": { "$ref": "#/entities/WorkoutSession" },
+      "description": "User's workout history"
+    }
+  }
+}

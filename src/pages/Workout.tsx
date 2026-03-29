@@ -84,12 +84,12 @@ export default function Workout() {
   const [saving, setSaving] = useState(false);
   const [activeDragItem, setActiveDragItem] = useState<any>(null);
   const [workoutName, setWorkoutName] = useState(selectedMuscleGroup ? `${selectedMuscleGroup} Workout` : 'Active Workout');
-  const [profile, setProfile] = useState<UserProfile>(storageService.getUserProfile());
-  const [history, setHistory] = useState<WorkoutSession[]>(storageService.getHistory());
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [history, setHistory] = useState<WorkoutSession[]>([]);
 
   useEffect(() => {
-    setProfile(storageService.getUserProfile());
-    setHistory(storageService.getHistory());
+    storageService.getUserProfile().then(setProfile);
+    storageService.getHistory().then(setHistory);
   }, []);
 
   const sensors = useSensors(
@@ -182,7 +182,7 @@ export default function Workout() {
     if (activeExercises.length === 0) return;
     setSaving(true);
     try {
-      storageService.saveWorkout({
+      await storageService.saveWorkout({
         userId: 'local-user',
         name: workoutName,
         date: new Date().toISOString(),

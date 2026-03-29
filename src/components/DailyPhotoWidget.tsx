@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Image as ImageIcon, Camera, X, Aperture } from 'lucide-react';
+import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage, auth } from '../services/firebase';
 
 const DailyPhotoWidget = () => {
   const [photo, setPhoto] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   
   // --- WEBCAM STATES ---
   const [isWebcamOpen, setIsWebcamOpen] = useState(false);
@@ -13,9 +16,50 @@ const DailyPhotoWidget = () => {
 
   // Load saved photo on mount
   useEffect(() => {
-    const savedPhoto = localStorage.getItem('todays_pic');
-    if (savedPhoto) setPhoto(savedPhoto);
+    const fetchPhoto = async () => {
+      if (!auth.currentUser) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const photoRef = ref(storage, `users/${auth.currentUser.uid}/daily_photos/${today}.png`);
+        const url = await getDownloadURL(photoRef);
+        setPhoto(url);
+      } catch (e) {
+        // No photo found or error
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPhoto();
   }, []);
+
+  const savePhotoToFirebase = async (dataUrl: string) => {
+    if (!auth.currentUser) return;
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const photoRef = ref(storage, `users/${auth.currentUser.uid}/daily_photos/${today}.png`);
+      await uploadString(photoRef, dataUrl, 'data_url');
+      const url = await getDownloadURL(photoRef);
+      setPhoto(url);
+    } catch (e) {
+      console.error("Error saving photo", e);
+    }
+  };
+
+  const removePhotoFromFirebase = async () => {
+    if (!auth.currentUser) return;
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const photoRef = ref(storage, `users/${auth.currentUser.uid}/daily_photos/${today}.png`);
+      await deleteObject(photoRef);
+      setPhoto(null);
+    } catch (e) {
+      console.error("Error removing photo", e);
+      setPhoto(null); // Clear locally anyway
+    }
+  };
 
   // --- STANDARD GALLERY UPLOAD ---
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,8 +68,8 @@ const DailyPhotoWidget = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        setPhoto(result);
-        localStorage.setItem('todays_pic', result);
+        setPhoto(result); // Optimistic UI
+        savePhotoToFirebase(result);
       };
       reader.readAsDataURL(file);
     }
@@ -80,8 +124,8 @@ const DailyPhotoWidget = () => {
         
         // Convert the canvas drawing into a Base64 image
         const imageDataUrl = canvas.toDataURL('image/png');
-        setPhoto(imageDataUrl);
-        localStorage.setItem('todays_pic', imageDataUrl);
+        setPhoto(imageDataUrl); // Optimistic UI
+        savePhotoToFirebase(imageDataUrl);
         
         stopWebcam(); // Close the modal
       }
@@ -89,8 +133,7 @@ const DailyPhotoWidget = () => {
   };
 
   const removePhoto = () => {
-    setPhoto(null);
-    localStorage.removeItem('todays_pic');
+    removePhotoFromFirebase();
   };
 
   return (

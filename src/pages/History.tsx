@@ -13,8 +13,8 @@ export default function History() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchHistory = () => {
-      const data = storageService.getHistory();
+    const fetchHistory = async () => {
+      const data = await storageService.getHistory();
       setSessions(data);
       setLoading(false);
     };

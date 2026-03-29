@@ -1,10 +1,57 @@
 import { WorkoutSession, UserProfile } from '../types';
+import { db, auth } from './firebase';
+import { doc, getDoc, setDoc, collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
 
-const STORAGE_KEYS = {
-  USER: 'momentum_user',
-  HISTORY: 'momentum_history',
-  AUTH: 'momentum_auth_user'
-};
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId: string | undefined;
+    email: string | null | undefined;
+    emailVerified: boolean | undefined;
+    isAnonymous: boolean | undefined;
+    tenantId: string | null | undefined;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  }
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 const DEFAULT_USER: UserProfile = {
   uid: 'local-user',
@@ -31,36 +78,71 @@ const DEFAULT_USER: UserProfile = {
 };
 
 export const storageService = {
-  // Auth
-  getAuthUser: () => {
-    const data = localStorage.getItem(STORAGE_KEYS.AUTH);
-    return data ? JSON.parse(data) : null;
-  },
-  setAuthUser: (user: any) => {
-    localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(user));
-  },
-  logout: () => {
-    localStorage.removeItem(STORAGE_KEYS.AUTH);
-  },
-
   // User Profile & Stats
-  getUserProfile: (): UserProfile => {
-    const data = localStorage.getItem(STORAGE_KEYS.USER);
-    return data ? JSON.parse(data) : DEFAULT_USER;
+  getUserProfile: async (): Promise<UserProfile> => {
+    const user = auth.currentUser;
+    if (!user) return DEFAULT_USER;
+
+    const path = `users/${user.uid}`;
+    const docRef = doc(db, 'users', user.uid);
+    try {
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return docSnap.data() as UserProfile;
+      } else {
+        const newUserProfile = { ...DEFAULT_USER, uid: user.uid, email: user.email || '' };
+        await setDoc(docRef, newUserProfile);
+        return newUserProfile;
+      }
+    } catch (error) {
+      handleFirestoreError(error, OperationType.GET, path);
+      return DEFAULT_USER; // Fallback
+    }
   },
-  saveUserProfile: (profile: UserProfile) => {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(profile));
+  saveUserProfile: async (profile: UserProfile) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    const path = `users/${user.uid}`;
+    const docRef = doc(db, 'users', user.uid);
+    try {
+      await setDoc(docRef, profile, { merge: true });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
   },
 
   // Workout History
-  getHistory: (): WorkoutSession[] => {
-    const data = localStorage.getItem(STORAGE_KEYS.HISTORY);
-    return data ? JSON.parse(data) : [];
+  getHistory: async (): Promise<WorkoutSession[]> => {
+    const user = auth.currentUser;
+    if (!user) return [];
+
+    const path = `users/${user.uid}/workouts`;
+    const q = query(collection(db, path), orderBy('date', 'desc'));
+    try {
+      const querySnapshot = await getDocs(q);
+      
+      return querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id
+      })) as WorkoutSession[];
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, path);
+      return []; // Fallback
+    }
   },
-  saveWorkout: (session: Omit<WorkoutSession, 'id'>) => {
-    const history = storageService.getHistory();
-    const newSession = { ...session, id: Math.random().toString(36).substr(2, 9) };
-    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify([newSession, ...history]));
-    return newSession;
+  saveWorkout: async (session: Omit<WorkoutSession, 'id'>) => {
+    const user = auth.currentUser;
+    if (!user) return null;
+
+    const path = `users/${user.uid}/workouts`;
+    const workoutsRef = collection(db, path);
+    try {
+      const docRef = await addDoc(workoutsRef, session);
+      return { ...session, id: docRef.id };
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, path);
+      return null;
+    }
   }
 };

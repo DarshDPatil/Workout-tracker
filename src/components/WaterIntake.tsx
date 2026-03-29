@@ -33,7 +33,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
   }, [profile.currentWeight, profile.waterGoalMode, profile.customWaterGoal]);
 
   useEffect(() => {
-    const checkAndResetWater = () => {
+    const checkAndResetWater = async () => {
       const today = new Date().toISOString().split('T')[0];
       const lastLogDate = profile.lastWaterLogDate;
 
@@ -44,14 +44,14 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
           lastWaterLogDate: today
         };
         onUpdate(updatedProfile);
-        storageService.saveUserProfile(updatedProfile);
+        await storageService.saveUserProfile(updatedProfile);
       }
     };
 
     checkAndResetWater();
   }, [profile.lastWaterLogDate]);
 
-  const addWater = (amountLiters: number) => {
+  const addWater = async (amountLiters: number) => {
     const newIntake = parseFloat((profile.waterIntake + amountLiters).toFixed(2));
     const updatedProfile = {
       ...profile,
@@ -60,7 +60,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
     };
     
     onUpdate(updatedProfile);
-    storageService.saveUserProfile(updatedProfile);
+    await storageService.saveUserProfile(updatedProfile);
 
     setLastAddedAmount(amountLiters);
     setShowUndo(true);
@@ -75,7 +75,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
     }, 1000);
   };
 
-  const handleUndo = () => {
+  const handleUndo = async () => {
     if (lastAddedAmount !== null) {
       const newIntake = Math.max(0, parseFloat((profile.waterIntake - lastAddedAmount).toFixed(2)));
       const updatedProfile = {
@@ -83,7 +83,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
         waterIntake: newIntake
       };
       onUpdate(updatedProfile);
-      storageService.saveUserProfile(updatedProfile);
+      await storageService.saveUserProfile(updatedProfile);
       setLastAddedAmount(null);
       setShowUndo(false);
     }
@@ -98,7 +98,7 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
     }
   };
 
-  const handleGoalUpdate = () => {
+  const handleGoalUpdate = async () => {
     const newGoal = parseFloat(tempGoal);
     if (!isNaN(newGoal) && newGoal > 0) {
       const updatedProfile = {
@@ -107,12 +107,12 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
         waterGoalMode: 'manual' as const
       };
       onUpdate(updatedProfile);
-      storageService.saveUserProfile(updatedProfile);
+      await storageService.saveUserProfile(updatedProfile);
       setIsEditingGoal(false);
     }
   };
 
-  const handleIntakeUpdate = () => {
+  const handleIntakeUpdate = async () => {
     const newIntake = parseFloat(tempIntake);
     if (!isNaN(newIntake) && newIntake >= 0) {
       const updatedProfile = {
@@ -120,28 +120,28 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
         waterIntake: parseFloat(newIntake.toFixed(2))
       };
       onUpdate(updatedProfile);
-      storageService.saveUserProfile(updatedProfile);
+      await storageService.saveUserProfile(updatedProfile);
       setIsEditingIntake(false);
     }
   };
 
-  const toggleGoalMode = () => {
+  const toggleGoalMode = async () => {
     const newMode = profile.waterGoalMode === 'auto' ? 'manual' : 'auto';
     const updatedProfile = {
       ...profile,
       waterGoalMode: newMode as 'auto' | 'manual'
     };
     onUpdate(updatedProfile);
-    storageService.saveUserProfile(updatedProfile);
+    await storageService.saveUserProfile(updatedProfile);
   };
 
-  const resetToday = () => {
+  const resetToday = async () => {
     const updatedProfile = {
       ...profile,
       waterIntake: 0
     };
     onUpdate(updatedProfile);
-    storageService.saveUserProfile(updatedProfile);
+    await storageService.saveUserProfile(updatedProfile);
   };
 
   const percentage = Math.min(100, Math.round((profile.waterIntake / goal) * 100));
