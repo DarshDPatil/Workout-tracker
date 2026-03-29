@@ -207,7 +207,7 @@ export default function Progress() {
                     dx={-10}
                   />
                   <Tooltip 
-                    formatter={(value: number) => [`${value.toFixed(2)} kg`, "Weight"]}
+                    formatter={(value: any) => [`${Number(value).toFixed(2)} kg`, "Weight"]}
                     contentStyle={{ 
                       borderRadius: '16px', 
                       border: '1px solid rgba(255,255,255,0.2)', 
