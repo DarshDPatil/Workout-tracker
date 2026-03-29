@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // Notice we are accepting 'activeFilter' as a prop now
 const TacticalCalendar = ({ activeFilter }) => {
   const daysOfWeek = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  const [selectedSession, setSelectedSession] = useState(null);
+  const [selectedSession, setSelectedSession] = useState<{ type: string; day: number; status: string; id: string; data: { type: string; title: string; volume: string; muscleGroups: string[]; pr?: boolean } } | null>(null);
 
   const today = new Date();
   const currentMonthName = today.toLocaleString('default', { month: 'long' }).toUpperCase();
@@ -15,7 +15,7 @@ const TacticalCalendar = ({ activeFilter }) => {
 
   // --- MOCK DATABASE ---
   // In a real app, this comes from your backend. Note the 'muscleGroups' array!
-  const workoutDatabase = {
+  const workoutDatabase: { [key: number]: { type: string; title: string; volume: string; muscleGroups: string[]; pr?: boolean } } = {
     12: { type: 'active', title: 'PUSH PROTOCOL', volume: '10,200 KG', muscleGroups: ['CHEST', 'SHOULDERS', 'ARMS'] },
     15: { type: 'pr', title: 'HEAVY DEADLIFTS', volume: '14,500 KG', muscleGroups: ['BACK', 'LEGS'], pr: true },
     24: { type: 'active', title: 'UPPER HYPERTROPHY', volume: '11,100 KG', muscleGroups: ['CHEST', 'BACK', 'ARMS'] },

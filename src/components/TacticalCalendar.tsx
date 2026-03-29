@@ -13,7 +13,7 @@ const TacticalCalendar = ({ activeFilter }: { activeFilter: string | null }) => 
   startDay = startDay === 0 ? 6 : startDay - 1; 
 
   // --- REALISTIC MOCK DATABASE ---
-  const workoutDatabase = {
+  const workoutDatabase: Record<number, any> = {
     1: { type: 'active', title: 'HYPERTROPHY PUSH', volume: '11,200 KG', muscleGroups: ['CHEST', 'SHOULDERS', 'TRICEPS'] },
     2: { type: 'active', title: 'HEAVY PULL', volume: '13,500 KG', muscleGroups: ['BACK', 'BICEPS', 'FOREARMS'] },
     3: { type: 'active', title: 'LOWER VOLUME', volume: '15,000 KG', muscleGroups: ['QUADS', 'HAMSTRINGS', 'GLUTES', 'CALVES', 'ABS'] },
@@ -82,7 +82,7 @@ const TacticalCalendar = ({ activeFilter }: { activeFilter: string | null }) => 
           </div>
 
           <div className="grid grid-cols-7 gap-3 sm:gap-4">
-            {calendarGrid.map((item) => {
+            {calendarGrid.map((item: any) => {
               if (item.type === 'offset') return <div key={item.id} className="w-full aspect-square opacity-0 pointer-events-none" />;
 
               let squareClass = "w-full aspect-square rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex flex-col items-center justify-center relative ";

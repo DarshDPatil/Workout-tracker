@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { Bell, User as UserIcon, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -81,7 +81,7 @@ function Navbar({ onLogout, userPhoto }: { onLogout: () => void, userPhoto?: str
   );
 }
 
-function PageWrapper({ children }: { children: React.ReactNode }) {
+function PageWrapper({ children }: { children: ReactNode }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -107,7 +107,7 @@ function AppContent({ user, handleLogout }: { user: any, handleLogout: () => voi
           <Navbar onLogout={handleLogout} userPhoto={user?.photoURL} />
           <main className="flex-1 relative z-10">
             <AnimatePresence mode="wait">
-              <Routes location={location} key={location.pathname}>
+              <Routes location={location}>
                 <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
                 <Route path="/workout" element={<PageWrapper><Workout /></PageWrapper>} />
                 <Route path="/workout/:muscle" element={<PageWrapper><Workout /></PageWrapper>} />
@@ -121,7 +121,7 @@ function AppContent({ user, handleLogout }: { user: any, handleLogout: () => voi
       ) : (
         <main className="flex-1 relative z-10">
           <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
+            <Routes location={location}>
               <Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
               <Route path="*" element={<Navigate to="/auth" />} />
             </Routes>
