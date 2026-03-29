@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 
 // Notice we are accepting 'activeFilter' as a prop now
-const TacticalCalendar = ({ activeFilter }) => {
+const TacticalCalendar = ({ activeFilter }: { activeFilter: string }) => {
   const daysOfWeek = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+<<<<<<< HEAD
   const [selectedSession, setSelectedSession] = useState<{ type: string; day: number; status: string; id: string; data: { type: string; title: string; volume: string; muscleGroups: string[]; pr?: boolean } } | null>(null);
+=======
+  const [selectedSession, setSelectedSession] = useState<any>(null);
+>>>>>>> 4526071537bdf1bd691316046bce5dba8a7c1d91
 
   const today = new Date();
   const currentMonthName = today.toLocaleString('default', { month: 'long' }).toUpperCase();
@@ -45,7 +49,7 @@ const TacticalCalendar = ({ activeFilter }) => {
     calendarGrid.push({ type: 'day', day, status, id: `day-${day}`, data: sessionData });
   }
 
-  const handleSquareClick = (item) => {
+  const handleSquareClick = (item: any) => {
     if (item.status === 'empty') setSelectedSession(null);
     else setSelectedSession(item);
   };
@@ -74,7 +78,7 @@ const TacticalCalendar = ({ activeFilter }) => {
           </div>
 
           <div className="grid grid-cols-7 gap-3 sm:gap-4">
-            {calendarGrid.map((item) => {
+            {calendarGrid.map((item: any) => {
               if (item.type === 'offset') return <div key={item.id} className="w-full aspect-square opacity-0 pointer-events-none" />;
 
               let squareClass = "w-full aspect-square rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex flex-col items-center justify-center relative ";
