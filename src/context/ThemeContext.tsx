@@ -14,16 +14,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 // 3. Create the Provider Component
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check local storage first, if nothing is there, check the user's Windows/Mac system preference!
-  const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('tactical_theme');
-    if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme;
-    
-    // Auto-detect system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    return 'light';
-  });
+  const [theme, setTheme] = useState<Theme>('light');
 
   // 4. The effect that actually flips the switch on the HTML document
   useEffect(() => {
@@ -33,7 +24,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
 
-    // Save their choice to storage
+    // Save their choice to storage (optional, but we'll keep it so they can toggle during session)
     localStorage.setItem('tactical_theme', theme);
   }, [theme]);
 
