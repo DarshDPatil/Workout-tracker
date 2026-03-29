@@ -12,7 +12,9 @@
           "properties": {
             "dailyStreak": { "type": "number" },
             "weightProgress": { "type": "number" },
-            "totalDays": { "type": "number" }
+            "totalDays": { "type": "number" },
+            "xp": { "type": "number" },
+            "level": { "type": "number" }
           }
         },
         "personalRecords": {

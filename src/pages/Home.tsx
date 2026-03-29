@@ -61,6 +61,21 @@ export default function Home() {
 
   if (!profile) return null;
 
+  const getRank = (level: number) => {
+    if (level < 5) return 'Novice';
+    if (level < 10) return 'Intermediate';
+    if (level < 20) return 'Advanced';
+    if (level < 30) return 'Elite Athlete';
+    return 'Master';
+  };
+
+  const xp = profile.stats?.xp || 0;
+  const level = profile.stats?.level || 1;
+  const currentLevelXP = xp % 1000;
+  const nextLevelXP = 1000;
+  const progressPercent = (currentLevelXP / nextLevelXP) * 100;
+  const rank = getRank(level);
+
   return (
     <div className="h-[calc(100vh-64px)] overflow-hidden flex flex-col max-w-7xl mx-auto px-8 py-8">
       {/* Header Section */}
@@ -77,16 +92,16 @@ export default function Home() {
           <div className="max-w-md mx-auto w-full px-4">
             <div className="flex justify-between items-end mb-2">
               <div className="flex items-center gap-2">
-                <span className="tech-label text-indigo-600 text-sm">LEVEL 14</span>
+                <span className="tech-label text-indigo-600 text-sm">LEVEL {level}</span>
                 <div className="w-1 h-1 bg-white/20 rounded-full" />
-                <span className="tech-label text-slate-400">Elite Athlete</span>
+                <span className="tech-label text-slate-400">{rank}</span>
               </div>
-              <span className="hud-data text-[10px] text-slate-500 dark:text-slate-400">850 / 1000 XP</span>
+              <span className="hud-data text-[10px] text-slate-500 dark:text-slate-400">{currentLevelXP} / {nextLevelXP} XP</span>
             </div>
             <div className="h-1.5 w-full bg-black/20 rounded-[10px] overflow-hidden border border-white/10">
               <motion.div 
                 initial={{ width: 0 }}
-                animate={{ width: '85%' }}
+                animate={{ width: `${progressPercent}%` }}
                 transition={{ duration: 2, ease: "circOut", delay: 0.5 }}
                 className="h-full bg-gradient-to-r from-indigo-600 to-blue-500"
               />

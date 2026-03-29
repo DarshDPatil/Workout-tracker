@@ -35,6 +35,8 @@ export interface UserProfile {
     dailyStreak: number;
     weightProgress: number;
     totalDays: number;
+    xp: number;
+    level: number;
   };
   personalRecords: {
     squat: number;

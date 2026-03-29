@@ -60,6 +60,8 @@ const DEFAULT_USER: UserProfile = {
     dailyStreak: 13,
     weightProgress: 0.5,
     totalDays: 44,
+    xp: 0,
+    level: 1,
   },
   personalRecords: {
     squat: 135,
@@ -139,6 +141,23 @@ export const storageService = {
     const workoutsRef = collection(db, path);
     try {
       const docRef = await addDoc(workoutsRef, session);
+      
+      // Add XP for completing a workout
+      const xpEarned = 100 + (session.exercises.length * 50);
+      const profile = await storageService.getUserProfile();
+      const currentXp = profile.stats?.xp || 0;
+      const newXp = currentXp + xpEarned;
+      const newLevel = Math.floor(newXp / 1000) + 1;
+      
+      await storageService.saveUserProfile({
+        ...profile,
+        stats: {
+          ...profile.stats,
+          xp: newXp,
+          level: newLevel
+        }
+      });
+
       return { ...session, id: docRef.id };
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, path);

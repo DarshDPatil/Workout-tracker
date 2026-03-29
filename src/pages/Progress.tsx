@@ -47,11 +47,22 @@ export default function Progress() {
     newHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     setWeightHistory(newHistory);
+    
+    // Add 25 XP for logging weight
+    const currentXp = profile?.stats?.xp || 0;
+    const newXp = currentXp + 25;
+    const newLevel = Math.floor(newXp / 1000) + 1;
+
     if (profile) {
       const updatedProfile = { 
         ...profile, 
         currentWeight: weightNum, 
-        weightHistory: newHistory 
+        weightHistory: newHistory,
+        stats: {
+          ...profile.stats,
+          xp: newXp,
+          level: newLevel
+        }
       };
       setProfile(updatedProfile);
       await storageService.saveUserProfile(updatedProfile);

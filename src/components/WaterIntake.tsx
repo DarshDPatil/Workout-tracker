@@ -53,10 +53,21 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
 
   const addWater = async (amountLiters: number) => {
     const newIntake = parseFloat((profile.waterIntake + amountLiters).toFixed(2));
+    
+    // Add 10 XP for logging water
+    const currentXp = profile.stats?.xp || 0;
+    const newXp = currentXp + 10;
+    const newLevel = Math.floor(newXp / 1000) + 1;
+
     const updatedProfile = {
       ...profile,
       waterIntake: newIntake,
-      lastWaterLogDate: new Date().toISOString().split('T')[0]
+      lastWaterLogDate: new Date().toISOString().split('T')[0],
+      stats: {
+        ...profile.stats,
+        xp: newXp,
+        level: newLevel
+      }
     };
     
     onUpdate(updatedProfile);
@@ -78,9 +89,20 @@ const WaterIntake: React.FC<WaterIntakeProps> = ({ profile, onUpdate }) => {
   const handleUndo = async () => {
     if (lastAddedAmount !== null) {
       const newIntake = Math.max(0, parseFloat((profile.waterIntake - lastAddedAmount).toFixed(2)));
+      
+      // Remove 10 XP for undoing water log
+      const currentXp = profile.stats?.xp || 0;
+      const newXp = Math.max(0, currentXp - 10);
+      const newLevel = Math.floor(newXp / 1000) + 1;
+
       const updatedProfile = {
         ...profile,
-        waterIntake: newIntake
+        waterIntake: newIntake,
+        stats: {
+          ...profile.stats,
+          xp: newXp,
+          level: newLevel
+        }
       };
       onUpdate(updatedProfile);
       await storageService.saveUserProfile(updatedProfile);
