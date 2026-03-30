@@ -76,7 +76,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, size = 300 }) => {
           const y = center + labelRadius * Math.sin(i * angleStep - Math.PI / 2);
           
           // Adjust text anchor based on position
-          let textAnchor = "middle";
+          let textAnchor: "middle" | "start" | "end" = "middle";
           if (x < center - 10) textAnchor = "end";
           if (x > center + 10) textAnchor = "start";
 
